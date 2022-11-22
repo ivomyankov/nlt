@@ -24,14 +24,7 @@ class HtmlService
        
         dd('HtmlServiceClass');
     }
-/*
-    public function getCache()
-    {
-        $this->config = Cache::get('config');
 
-        return;
-    }
-*/
     public function escapeSpecialCharacters($html_content) {
         $html_content = htmlspecialchars($html_content, ENT_QUOTES);
 
@@ -126,6 +119,7 @@ class HtmlService
             }
         } else if ($config['company'] == 'Jarltech') {
             $html_content = Str::replace('https://www.jarltech.com/2007/jarltech.php?language=at_en&reqd=at&link=5', 'https://bit.ly/3UaNmhr', $html_content);
+            $html_content = Str::replace('width="1200"', 'width="800"', $html_content);
         }
            
         $html_content = Str::replace('><', '>
