@@ -36,7 +36,7 @@ class HtmlService
         $images = array();
         $config = Cache::get('config');
 
-        $this->saveImageLogoMXP();
+        $this->saveImageLogos();
         
         preg_match_all("{<img\\s*(.*?)src=('.*?'|\".*?\"|[^\\s]+)(.*?)\\s*/?>}ims", $html_content, $matches, PREG_SET_ORDER);
 
@@ -74,9 +74,14 @@ class HtmlService
         Image::make($image)->save($config['storage_path'] . $config['folder'] . '/' . $baseName);
     }
 
-    private function saveImageLogoMXP() { 
+    private function saveImageLogos() { 
         $config = Cache::get('config');
         Image::make(storage_path('app/public/images/logo_mxp.png'))->save($config['storage_path'] . $config['folder']  . '/logo_mxp.png');
+        Image::make(storage_path('app/public/images/f.png'))->save($config['storage_path'] . $config['folder']  . '/f.png');
+        Image::make(storage_path('app/public/images/t.png'))->save($config['storage_path'] . $config['folder']  . '/t.png');
+        Image::make(storage_path('app/public/images/i.png'))->save($config['storage_path'] . $config['folder']  . '/i.png');
+        Image::make(storage_path('app/public/images/x.png'))->save($config['storage_path'] . $config['folder']  . '/x.png');
+        Image::make(storage_path('app/public/images/l.png'))->save($config['storage_path'] . $config['folder']  . '/l.png');
     }
 
     public function replaceAsciiInLinks($html_content) {
@@ -110,6 +115,11 @@ class HtmlService
             $html_content = Str::replace('service@tripicchio', 'info@tarox', $html_content);
             $html_content = Str::replace('Sehr geehrter Herr Mustermann,', 'Lieber Leser,', $html_content);
 
+            $old = '<td align="left" class="SWYN" style="padding:27px 10px 0px 10px;"><a href="https://www.facebook.com/TAROXAG/"><img alt="" border="0" src="http://port-neo.scnem.com/art_resource.php?sid=nq1.je79nd" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 33px !important;" width="33" /></a> <a href="https://www.xing.com/company/taroxag"><img alt="" border="0" src="http://port-neo.scnem.com/art_resource.php?sid=nq2.2omn1rp" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 26px !important;" width="26" /></a> <a href="https://twitter.com/taroxag"><img alt="" border="0" src="http://port-neo.scnem.com/art_resource.php?sid=nq0.2e09bqd" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 21px !important;" width="21" /></a> <a href="https://www.linkedin.com/company/tarox-ag/"><img alt="LinkedIn" src="http://port-neo.scnem.com/art_resource.php?sid=95nd.2oooc2" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 32px !important;" width="32" /></a> <a href="https://www.instagram.com/taroxag/"><img alt="Instagram" src="http://port-neo.scnem.com/art_resource.php?sid=95ne.2894hk4" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 34px !important;" width="34" /></a></td>';
+            $old = $this->replaceAsciiInLinks($old);
+            $new = '<td align="left" class="SWYN" style="padding:27px 10px 0px 10px;"><a href="https://www.facebook.com/TAROXAG/"><img alt="" border="0" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn30745.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 33px !important;" width="33" /></a> <a href="https://www.xing.com/company/taroxag"><img alt="" border="0" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn30746.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 26px !important;" width="26" /></a> <a href="https://twitter.com/taroxag"><img alt="" border="0" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn30744.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 21px !important;" width="21" /></a> <a href="https://www.linkedin.com/company/tarox-ag/"><img alt="LinkedIn" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn427225.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 32px !important;" width="32" /></a> <a href="https://www.instagram.com/taroxag/"><img alt="Instagram" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn427226.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 34px !important;" width="34" /></a></td>';
+            $html_content = Str::replace($old, $new, $html_content);
+                //dd(Str::contains($html_content, $old), $config['base_url'].'/storage/images/' .'f.png');
             // find last occurrence and add id="rmv"
             $pos = strrpos($html_content, '<td align="center" bgcolor="#EDEDED">');
             if($pos !== false)

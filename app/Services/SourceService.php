@@ -59,7 +59,7 @@ class SourceService
     }
 
 
-
+/*
 
     private function htmlHandler($raw) {
         $i=0;
@@ -70,5 +70,5 @@ class SourceService
         
         return $content;
     }
-
+*/
 }
