@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 class Uploaded extends Component
 {
     private $config;
-    public $html_path;
 
     /**
      * Create a new component instance.
@@ -29,12 +28,10 @@ class Uploaded extends Component
     public function render()
     {
         //dd($this->config);
-        //$this->html_path = $this->config['storage_path'] . $this->config['folder'] . '/index.html';
-
         $content = $this->getHtml();
         $content = $this->replaceImageUrl($content);
 
-        return view('components.uploaded')->with(['html' => $content]);
+        return view('components.uploaded')->with(['config' => $this->config]);
     }
 
     private function getHtml() {
@@ -46,6 +43,5 @@ class Uploaded extends Component
     private function replaceImageUrl($content) {
         $content = Str::replace($this->config['mediaservices'], $this->config['internal_path'], $content);
         echo $content;
-        //return $content;
     }
 }

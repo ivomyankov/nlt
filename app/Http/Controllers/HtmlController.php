@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Services\HtmlService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+
 //use Illuminate\Support\Facades\View;
 
 class HtmlController extends Controller
@@ -69,9 +71,21 @@ class HtmlController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id = 0)
     {
-        //
+        $config = Cache::get('config');
+        //dd($config, Storage::disk('local'), Storage::disk('nls'), $config['storage_path'] . $config['folder'] . '/index.html');
+        try {
+            $html = File::get($config['storage_path'] . $config['folder'] . '/index.html');
+            return view('editor', ['html' => $html]);
+        }
+        catch(Exception $e) {
+            dd($e->getMessage());
+        }
+        //if (Storage::disk('nls')->exists($config['folder'] . '/index.html')) {}
+
+        dd($config);
+        
     }
 
     /**
@@ -81,9 +95,24 @@ class HtmlController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id = null) 
     {
-        //
+        $config = Cache::get('config');
+        
+        $validated = $request->validate([
+            'html' => 'required',
+        ]);
+
+        try {
+            File::put($config['storage_path'] . $config['folder'] . '/index.html', $validated['html']);
+            return view('uploaded', ['cache' => $config]);
+        }
+        catch(Exception $e) {
+            dd($e->getMessage(), $config);
+        }
+        
+        dd($validated['html']);
+        
     }
 
     /**

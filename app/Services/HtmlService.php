@@ -70,8 +70,16 @@ class HtmlService
         return $html_content;
     }
 
-    private function saveImage($image, $baseName, $config) { 
-        Image::make($image)->save($config['storage_path'] . $config['folder'] . '/' . $baseName);
+    private function saveImage($image, $baseName, $config) { //$baseName ='https://d39vk9zh1kj304.cloudfront.net/assets/files/Media/iQ7dAkGifrALjh8Sw/medium/Omen%20by%20HP%20Laptop.png';
+        if (Str::of($image)->contains(' ')){
+            $image = Str::replace(' ', '%20', $image);
+        }
+        try {
+            Image::make($image)->save($config['storage_path'] . $config['folder'] . '/' . $baseName);
+        }
+        catch(Exception $e) {
+            dd($e->getMessage(), $image, $baseName);
+        }
     }
 
     private function saveImageLogos() { 
@@ -114,6 +122,7 @@ class HtmlService
         if ($config['company'] == 'Tarox') {
             $html_content = Str::replace('service@tripicchio', 'info@tarox', $html_content);
             $html_content = Str::replace('Sehr geehrter Herr Mustermann,', 'Lieber Leser,', $html_content);
+            $html_content = Str::replace('Lieber Herr Mustermann,', 'Lieber Leser,', $html_content);
 
             $old = '<td align="left" class="SWYN" style="padding:27px 10px 0px 10px;"><a href="https://www.facebook.com/TAROXAG/"><img alt="" border="0" src="http://port-neo.scnem.com/art_resource.php?sid=nq1.je79nd" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 33px !important;" width="33" /></a> <a href="https://www.xing.com/company/taroxag"><img alt="" border="0" src="http://port-neo.scnem.com/art_resource.php?sid=nq2.2omn1rp" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 26px !important;" width="26" /></a> <a href="https://twitter.com/taroxag"><img alt="" border="0" src="http://port-neo.scnem.com/art_resource.php?sid=nq0.2e09bqd" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 21px !important;" width="21" /></a> <a href="https://www.linkedin.com/company/tarox-ag/"><img alt="LinkedIn" src="http://port-neo.scnem.com/art_resource.php?sid=95nd.2oooc2" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 32px !important;" width="32" /></a> <a href="https://www.instagram.com/taroxag/"><img alt="Instagram" src="http://port-neo.scnem.com/art_resource.php?sid=95ne.2894hk4" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 34px !important;" width="34" /></a></td>';
             $old = $this->replaceAsciiInLinks($old);
@@ -130,6 +139,13 @@ class HtmlService
         } else if ($config['company'] == 'Jarltech') {
             $html_content = Str::replace('https://www.jarltech.com/2007/jarltech.php?language=at_en&reqd=at&link=5', 'https://bit.ly/3UaNmhr', $html_content);
             $html_content = Str::replace('width="1200"', 'width="800"', $html_content);
+        } else if ($config['company'] == 'CDS') {
+            str_replace("'", "\'", $html_content);
+            //dd($html_content);
+            $html_content = Str::replace("&#39;HCo Gotham&#39;, ", '', $html_content);
+            //$html_content = $this->escapeSpecialCharacters($html_content);
+            //$html_content = Str::replace("HCo Gotham", '.', $html_content);
+            $html_content = Str::replace('<div style="margin:0px auto;max-width:600px;">                <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">          <tbody>            <tr>              <td style="direction:ltr;font-size:0px;padding:0;text-align:center;">                <!--[if mso | IE]><table role="presentation" border="0" cellpadding="0" cellspacing="0"><tr><td class="" style="vertical-align:top;width:600px;" ><![endif]-->                  <div class="mj-column-per-100 mj-outlook-group-fix" style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">              <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:top;" width="100%">        <tbody>                        <tr>                <td align="left" style="font-size:0px;padding:10px 25px;padding-top:10px;padding-right:20px;padding-bottom:30px;padding-left:20px;word-break:break-word;">                        <div style="font-family:Calibri, Arial;font-size:13px;font-weight:500;line-height:18px;text-align:left;color:#00354c;">Sie erhalten diesen E-Mail Newsletter auf eigenen Wunsch. Wenn Sie diese E-Mail in Zukunft\t\t\tnicht mehr empfangen möchten, können Sie sich hier\t\t\t<a style="color: #00b8f1; text-decoration: underline" href="https://026ui.mjt.lu/unsub2?m=AUsAAAOP9yEAAAACyHgAAAEwtpYAAAAAIewAACAwABvbSgBjgK4y_2rPWygXTeeyK3cedrY9GgAascQ&b=3049c969&e=9c8d1723&x=EJRP1XtKsJQC2PEnmbXAYaaj6lczCyS3arXENyTbWmk&hl=DE?utm_medium=email">abmelden</a>\t\t\t<br/>\t\t\tEmpfänger: sven_bent@cds-it-systeme.de<br/>\t\t\tMeine Daten\t\t\t<a style="color: #00b8f1; text-decoration: underline" href="https://newsletter.cds.blue/form/preferences?email=%5B%5BEMAIL_TO%5D%5D&utm_medium=email">ändern</a></div>                    </td>              </tr>                    </tbody>      </table>          </div>', '', $html_content);
         }
            
         $html_content = Str::replace('><', '>

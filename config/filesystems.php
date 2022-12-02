@@ -36,6 +36,12 @@ return [
             'throw' => false,
         ],
 
+        'nls' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/newsletters/'),
+            'throw' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
