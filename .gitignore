@@ -1,6 +1,5 @@
 # defoult 
 /node_modules
-/public/build
 /public/hot
 /public/storage
 .env.backup
