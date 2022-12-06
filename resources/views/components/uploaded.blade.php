@@ -1,1 +1,0 @@
-<center><iframe src="{{ $config['base_url'] . '/' . $config['internal_path'] . $config['folder'] . '/index.html' }}" style="width: 100vh; height: 100vw;" title="W3Schools Free Online Web Tutorials"></iframe></center>
