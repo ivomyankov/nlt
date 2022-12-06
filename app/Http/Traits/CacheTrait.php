@@ -43,7 +43,7 @@ trait CacheTrait {
         if (!Cache::has($var) && $var == 'config') {
             $cache = [
                 'base_url'      => url('/'),
-                'mediaservices' => 'https://newsletter.mediaservices.biz/zzz/',
+                'mediaservices' => 'https://nlt.mediaservices.biz/storage/newsletters/',
                 'internal_path' => 'storage/newsletters/'
             ];
             

@@ -56,13 +56,12 @@ class HtmlService
                 if( isset($path_parts['extension']) && in_array($path_parts['extension'] , array('jpg', 'jpeg', 'png', 'gif', 'wepp')) ) {
                     //dump($path_parts['dirname']. '/' .$path_parts['basename']);
                     $this->saveImage($link, $path_parts['basename'], $config);
-                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], 'https://newsletter.mediaservices.biz/zzz/'. $config['folder']. '/' . $path_parts['basename'], $html_content);
+                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['mediaservices']. $config['folder']. '/' . $path_parts['basename'], $html_content);
                 } else {
                     //dump($path_parts['dirname']. '/' .$path_parts['basename']);
                     $this->saveImage($link, $i.'.jpg', $config);       
-                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], 'https://newsletter.mediaservices.biz/zzz/'. $config['folder']. '/' . $i .'.jpg' , $html_content);            
-                }                   
-                //$html_content = Str::replace($path_parts['basename'], 'https://newsletter.mediaservices.biz/zzz/', $html_content);            
+                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['mediaservices']. $config['folder']. '/' . $i .'.jpg' , $html_content);            
+                }                             
             }      
         }
         
