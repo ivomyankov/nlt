@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HtmlController;
 use App\Http\Controllers\SourceController;
+use App\Http\Controllers\ZipController;
 use App\Services\DirService;
 use Illuminate\Support\Facades\Route;
 use Intervention\Image\ImageManagerStatic as Image;
@@ -32,6 +33,8 @@ Route::middleware([
     })->name('dashboard');
 });
 
+Route::get('/unzip/{id}', [ZipController::class, 'unzip'])->name('unzip');
+
 Route::post('upload', [SourceController::class, 'index'])->middleware('auth');
 
 Route::post('update', [HtmlController::class, 'update'])->middleware('auth');
@@ -42,7 +45,8 @@ Route::get('/delete', [DirService::class, 'delete'])->name('delete')->middleware
 
 Route::get('/edit', [HtmlController::class, 'edit'])->name('edit')->middleware('auth');
 
-Route::get('/newsletters', [DirService::class, 'newsletters'])->name('newsletters')->middleware('auth');
+//Route::get('/newsletters', [DirService::class, 'newsletters'])->name('newsletters')->middleware('auth');
+Route::get('/newsletters', [HtmlController::class, 'index'])->name('newsletters')->middleware('auth');
 
 Route::get('upload/{source?}', function ($source = null) {
     return view('upload', compact("source"));

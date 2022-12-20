@@ -29,7 +29,7 @@ class SourceService
     }
     
     public function handle($source, $folder, $dirControllerInstance) { 
-        //dd($source);
+        //dd($source['content']);
         
         $this->setStorageDestinationPath($folder);
         //dd($this->storageDestinationPath);
@@ -53,7 +53,7 @@ class SourceService
             //$htmlContent = $this->htmlHandler($source['content']);
             return $htmlContent;
         }
-
+        
         return view('uploaded', ['newsletter' => 'Victoria']);   
         //dd('source hadler');       
     }

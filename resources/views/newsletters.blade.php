@@ -10,8 +10,8 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 
                 <div class="row px-4 py-3">      
-                    @livewire('newsletters', ['directories' => $folders])                                                         
-                        
+                    <!--@ livewire('newsletters', ['directories' => $folders])      -->                                                   
+                    @livewire('newsletters', ['nls' => $nls])     
                     
                 </div>
                 

@@ -6,7 +6,8 @@ use Livewire\Component;
 
 class Newsletters extends Component
 {
-    public $folders = array();
+    public $nls;
+    public $weeks = array();
     public $directories;
     public $convertion = [
         1 => 'Mon',
@@ -20,34 +21,35 @@ class Newsletters extends Component
 
     public function render()
     {
-        $this->folders = $this->getDataParams();
+        //dd($this->nls);
+        $this->weeks = $this->getDataParams();
 
         return view('livewire.newsletters');
     }
 
     public function getDataParams() {
-        foreach ($this->directories as $key => $dir) {
-            $date = substr($dir, 0, 10);
-            $name = substr($dir, 11);
+        foreach ($this->nls as $key => $nl) { //dd($nl->company->name);
+            $date = $nl->date;
+            $company = $nl->company->name;
             $week_day = date("D", strtotime($date));
             $week_number = date("W", strtotime($date));
 
-            if (!isset($folders[$week_number][$week_day])) {
-                $folders[$week_number][$week_day] = [];
+            if (!isset($weeks[$week_number][$week_day])) {
+                $weeks[$week_number][$week_day] = [];
             }
             
-            array_push($folders[$week_number][$week_day], ['directory' => $dir,'date' => $date, 'name' => $name]);
+            array_push($weeks[$week_number][$week_day], ['nl' => $nl]);
         }
 
-        $folders = $this->addEmptyDays($folders);
+        $weeks = $this->addEmptyDays($weeks);
 
-        //dd($folders);
-        return $folders;
+        //dd($weeks);
+        return $weeks;
     }
 
-    public function addEmptyDays($folders) {
-        //dump($folders);
-        foreach ($folders as $week_number => $week) {             
+    public function addEmptyDays($weeks) {
+        //dump($weeks);
+        foreach ($weeks as $week_number => $week) {             
             $temp = [];
             for ($i = 1; $i < 8; $i++) {
                 if (!array_key_exists($this->convertion[$i], $week)) {
@@ -56,12 +58,12 @@ class Newsletters extends Component
                     $temp[$this->convertion[$i]] = $week[$this->convertion[$i]];
                 }
             }
-            $folders[$week_number] = $temp;
+            $weeks[$week_number] = $temp;
             //dd($temp);
         }
         
-        //dd($folders);
-        return $folders;
+        //dd($weeks);
+        return $weeks;
     }
 
     public function colByWeekDay($val) {

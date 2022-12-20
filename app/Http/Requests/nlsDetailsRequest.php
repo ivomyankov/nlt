@@ -27,7 +27,8 @@ class nlsDetailsRequest extends FormRequest
             'url'   => 'url',
             'file'  => 'mimes:zip,rar,gzip,text/html,html|max:200000', //required_without_all:url|
             'date'  => 'required|date_format:Y-m-d',
-            'name'  => 'required|min:3|max:20'
+            'company'  => 'required|min:3|max:20',
+            'company_id'  => 'required|exists:companies,id'
         ];
     }
 

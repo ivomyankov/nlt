@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Http\Traits\CacheTrait;
+use App\Models\Newsletters;
 use Illuminate\Http\Request;
 use App\Services\HtmlService;
 use Illuminate\Support\Facades\Cache;
@@ -28,9 +29,11 @@ class HtmlController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Newsletters $nls)
     {
-        //
+        $nls = $nls::with('company')->get();
+
+        return view("newsletters",compact('nls'));
     }
 
     /**
@@ -147,6 +150,20 @@ class HtmlController extends Controller
         dd($config['storage_path'] . $config['folder'] . '/index.html');
     }
 
+    private function saveToDb()
+    {
+        $config = Cache::get('config');
+        //dd($config);
+        $data = [
+            "date" => $config['date'],
+            "company_id" => $config['company_id']
+        ];
+
+        Newsletters::firstOrCreate( $data); 
+        
+        return;
+    }
+
     /**
      * Handles html creation and manupulation
      *
@@ -154,8 +171,13 @@ class HtmlController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function handleCreation($html_content)
-    {        
+    {   
+        /*     
+        $old = new ZipController;
+        $old->arhivateNewsletter();
+        dd($old);
         
+        */
         try {
             $this->html_service->detectLanguage($html_content);
             $html_content = $this->html_service->checkHtmlStructure($html_content);
@@ -171,5 +193,6 @@ class HtmlController extends Controller
         }
                        
         $this->saveToFile($html_content);
+        $this->saveToDb();
     }
 }

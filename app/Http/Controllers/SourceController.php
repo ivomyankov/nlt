@@ -7,6 +7,7 @@ use App\Http\Requests\nlsDetailsRequest;
 use App\Services\DirService;
 use App\Services\SourceService;
 use App\Http\Traits\CacheTrait;
+use App\Models\Company;
 use Illuminate\Support\Str;
 use DOMDocument;
 //use Illuminate\Http\Request;
@@ -29,10 +30,14 @@ class SourceController extends Controller
     {         
         $validated = $request->validated();
         //dd($validated);
-
-        $folder = $dir->dirCreator($validated['date'] . '_' . $validated['name']);
+        
+        $this->addCache($validated);
+        $cache = $this->getCache('config');
+        //dd($cache);
+        
+        $folder = $dir->dirCreator($cache['date'] . '_' . $cache['company']);
         //dd($folder);
-
+        
         // validates date, name, and source
         $source = $this->source($validated);
 
@@ -47,19 +52,26 @@ class SourceController extends Controller
         //$this->saveHtmlFile($htmlContent);
       
         $cache = $this->getCache('config');
-        
+        //dd($cache);
         return view('uploaded', ['cache' => $cache]);
     }
 
-    private function source($validated) {        
+    private function source($validated) {       
         $source = [
             'source' => array_key_first($validated),
             'content'   => $validated[array_key_first($validated)]
         ];
         
-        $this->addToCache(['company' => $validated['name']]);
-        
         return $source;
+    }
+
+    private function addCache($validated)
+    {
+        $company = Company::find($validated['company_id']);
+        //dd($company['name']);
+        $this->addToCache(['company' => $company['name']]);
+        $this->addToCache(['date' => $validated['date']]);
+        $this->addToCache(['company_id' => $validated['company_id']]);
     }
 
     public function deleteFolder($folder, DirService $dir) {

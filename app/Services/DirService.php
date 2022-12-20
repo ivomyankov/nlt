@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Newsletters;
 use Illuminate\Support\Facades\File;
 
 class DirService
 {
     public function dirCreator($folder) {
+        //File::delete(storage_path('app/public/newsletters/2022-11-02_Jarltecharchive.zip'));
         //dd($folder);
         $storagePath = storage_path("app/public/newsletters/" . $folder);
 
@@ -25,6 +27,8 @@ class DirService
         $storagePath = storage_path("app/public/newsletters/" . $folder);
         if (File::exists( $storagePath)) {
             File::deleteDirectory($storagePath);
+            
+            //$nl->update(['archived' => 1]);
         }
 
         return redirect()->route('delete');
@@ -60,7 +64,7 @@ class DirService
         //dd($directory);
         if (is_dir($directory[0])) {
             rename($directory[0], str_replace(basename($directory[0]), 'img', $directory[0]));
-            dd(basename($directory[0]) . ' is a direcotry');
+            //dd(basename($directory[0]) . ' is a direcotry');
         }
     }
 }
