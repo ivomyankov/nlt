@@ -41,7 +41,7 @@ class Uploaded extends Component
     }
 
     private function replaceImageUrl($content) {
-        $content = Str::replace($this->config['mediaservices'], $this->config['internal_path'], $content);
+        $content = Str::replace($this->config['server'], $this->config['internal_path'], $content);
         echo $content;
     }
 }

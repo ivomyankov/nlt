@@ -56,11 +56,11 @@ class HtmlService
                 if( isset($path_parts['extension']) && in_array($path_parts['extension'] , array('jpg', 'jpeg', 'png', 'gif', 'wepp')) ) {
                     //dump($path_parts['dirname']. '/' .$path_parts['basename']);
                     $this->saveImage($link, $path_parts['basename'], $config);
-                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['mediaservices']. $config['folder']. '/' . $path_parts['basename'], $html_content);
+                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['server']. $config['folder']. '/' . $path_parts['basename'], $html_content);
                 } else {
                     //dump($path_parts['dirname']. '/' .$path_parts['basename']);
                     $this->saveImage($link, $i.'.jpg', $config);       
-                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['mediaservices']. $config['folder']. '/' . $i .'.jpg' , $html_content);            
+                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['server']. $config['folder']. '/' . $i .'.jpg' , $html_content);            
                 }                             
             }      
         }
@@ -301,6 +301,12 @@ class HtmlService
 
     public function addFooter($html_content) {
         $config = Cache::get('config');
+
+        if (Str::contains($config['server'], 'resellerdirect')) {
+            $html_content = Str::replace('</body>', '[footer700]</body>', $html_content);
+
+            return $html_content; 
+        }
         
         $de = '<!-- Footer -->
         <br />
@@ -314,7 +320,7 @@ class HtmlService
         </tr>
         <tr valign="middle">
         <td valign="top" width="200">
-        <img src="'.$config['mediaservices'] . $config['folder'] . '/' .'logo_mxp.png" height="56" width="181">
+        <img src="'.$config['server'] . $config['folder'] . '/' .'logo_mxp.png" height="56" width="181">
         </td>
         <td>
         <div style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';text-align:justify;">Dieses E-Mail ist kein Spam! Sie erhalten es als registrierter User, 
@@ -353,7 +359,7 @@ class HtmlService
         </tr>
         <tr valign="middle">
         <td valign="top" width="200">
-        <img src="'.$config['mediaservices'] . $config['folder'] . '/' .'logo_mxp.png" height="56" width="181">
+        <img src="'.$config['server'] . $config['folder'] . '/' .'logo_mxp.png" height="56" width="181">
         </td>
         <td>
         <div style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';text-align:justify;">This e-mail is not a spam! You recieve this e-mail as a registered client or as an intrested person 

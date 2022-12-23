@@ -159,8 +159,9 @@ class HtmlController extends Controller
             "company_id" => $config['company_id']
         ];
 
-        Newsletters::firstOrCreate( $data); 
-        
+        $nl = Newsletters::firstOrCreate( $data); 
+        $this->addToCache(['nl_id' => $nl->id]);
+
         return;
     }
 

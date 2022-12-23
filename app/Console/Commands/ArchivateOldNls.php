@@ -29,7 +29,7 @@ class ArchivateOldNls extends Command
     public function handle()
     {
         $old = new ZipController;
-        $old->arhivateNewsletter();
+        $old->arhivateNewsletters();
         
         return Command::SUCCESS;
     }

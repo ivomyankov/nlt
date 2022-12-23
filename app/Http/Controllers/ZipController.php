@@ -45,7 +45,7 @@ class ZipController extends Controller
         }
     }
 
-    public function arhivateNewsletter(){
+    public function arhivateNewsletters(){
         
         $dbNls = new Newsletters();
         $old = $dbNls->getOldNls();
@@ -82,6 +82,37 @@ class ZipController extends Controller
         }
         
         return $old;
+    }
+
+    public function arhivateNewsletter(Newsletters $nls, $id){
+        $nl = $nls::with('company')->find($id);
+        
+        $dir = storage_path('app/public/newsletters/'.$nl->date.'_'.$nl->company->name);
+        $files = File::files($dir);
+        //dd($files, $nl->date.'_'.$nl->company->name);
+        $zip = new \ZipArchive();        
+        $zip->open($dir.'/archive.zip', \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        if (is_dir($dir)) {
+            foreach ($files as $key => $file){
+                $relativeName = basename($file);
+                //dd($file, $relativeName, storage_path('app/public/newsletters/'.$nl->date.'_'.$nl->company->name).'/archive.zip');
+                if ($relativeName != 'archive.zip') {
+                    $zip->addFile($file, $relativeName); 
+                }
+                               
+        //dump($file);
+            }
+        }
+        
+        $zip->close();
+
+        $nl->update(['archived' => 1]);
+        
+        $headers = array(
+            'Content-Type: application/pdf',
+          );
+
+        return response()->download($dir.'/archive.zip', $nl->date.'_'.$nl->company->name.'.zip', $headers);
     }
 
     public function unzip(Newsletters $nls, $id)

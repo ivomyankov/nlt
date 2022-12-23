@@ -35,6 +35,8 @@ Route::middleware([
 
 Route::get('/unzip/{id}', [ZipController::class, 'unzip'])->name('unzip');
 
+Route::get('/zip/{id}', [ZipController::class, 'arhivateNewsletter'])->name('zip')->middleware('auth');
+
 Route::post('upload', [SourceController::class, 'index'])->middleware('auth');
 
 Route::post('update', [HtmlController::class, 'update'])->middleware('auth');

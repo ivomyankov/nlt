@@ -29,16 +29,15 @@ class SourceController extends Controller
     public function index(SourceService $source_service, nlsDetailsRequest $request, DirService $dir)
     {         
         $validated = $request->validated();
-        //dd($validated);
+        //dump($validated);
         
-        $this->addCache($validated);
+        $this->addInCache($validated);
         $cache = $this->getCache('config');
         //dd($cache);
         
         $folder = $dir->dirCreator($cache['date'] . '_' . $cache['company']);
         //dd($folder);
         
-        // validates date, name, and source
         $source = $this->source($validated);
 
         // Source Handler takes care of whatever type submited (arhive, html, url)
@@ -65,13 +64,16 @@ class SourceController extends Controller
         return $source;
     }
 
-    private function addCache($validated)
+    private function addInCache($validated)
     {
         $company = Company::find($validated['company_id']);
         //dd($company['name']);
+        $this->addToCache(['server' => $validated['server']]);
         $this->addToCache(['company' => $company['name']]);
         $this->addToCache(['date' => $validated['date']]);
         $this->addToCache(['company_id' => $validated['company_id']]);
+
+        return;
     }
 
     public function deleteFolder($folder, DirService $dir) {

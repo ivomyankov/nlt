@@ -6,21 +6,25 @@ use Illuminate\Support\Facades\Cache;
 trait CacheTrait {
 
     public function addToCache($config)
-    {
+    { 
         if (Cache::has('config')) {
             if (!is_array($config)) {
                 dd($config);
             }
-            $cache = Cache::get('config');
+            $old_cache = Cache::get('config');
             //echo "<p>Old cache: <pre>" . var_dump($cache). "</pre></p>";
-            $new_cache = array_merge($cache, $config);
+            $new_cache = array_merge($old_cache, $config);
             Cache::put('config', $new_cache, $seconds = 600);
-            $cache = Cache::get('config');
+            //$cache = Cache::get('config');
+            //dump($new_cache);
             //echo "<p>Updated cache: <pre>" . var_dump($cache). "</pre></p>";
+            return;
         } else {
             Cache::put('config', $config, $seconds = 600);
             $cache = Cache::get('config');
+            //dump($cache);
             //echo "<p>New cache: <pre>" . var_dump($cache). "</pre></p>";
+            return;
         }
         
     }
@@ -43,7 +47,7 @@ trait CacheTrait {
         if (!Cache::has($var) && $var == 'config') {
             $cache = [
                 'base_url'      => url('/'),
-                'mediaservices' => 'https://nlt.mediaservices.biz/storage/newsletters/',
+                //'mediaservices' => 'https://nlt.mediaservices.biz/storage/newsletters/',
                 'internal_path' => 'storage/newsletters/'
             ];
             
@@ -53,5 +57,6 @@ trait CacheTrait {
             dd('No such cache');
         }
     }
+    
 
 }

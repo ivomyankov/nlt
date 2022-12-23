@@ -48,7 +48,7 @@ class SourceService
 
         //dd($source);
 
-        if($source['type'] == 'html'){
+        if($source['type'] == 'html'){ 
             $htmlContent = file_get_contents($source['content']);
             //$htmlContent = $this->htmlHandler($source['content']);
             return $htmlContent;

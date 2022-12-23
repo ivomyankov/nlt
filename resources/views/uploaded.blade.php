@@ -12,6 +12,7 @@
             <p class="font-bold">Html uploaded successfully</p>
             <p class="text-sm">Open html in new tab: <x-jet-nav-link href="{{ url('storage/newsletters/' . $cache['folder'] . '/index.html') }}" target="_blank" :active="request()->routeIs('upload')">{{ $cache['folder'] }}</x-jet-nav-link></p>
             <p class="text-sm">Edit html: <x-jet-nav-link href="{{ route('edit') }}" target="_blank" >{{ $cache['folder'] }}</x-jet-nav-link></p>
+            <p class="text-sm">Edit html: <x-jet-nav-link href="{{ route('zip', ['id' => $cache['nl_id'] ]) }}" target="_blank" >Download</x-jet-nav-link></p> 
           </div>
         </div>
     </div>

@@ -22,6 +22,13 @@
                     <a href="{{ route('upload', ['source' => 'file']) }}" class="btn btn-outline-primary m-1 w-25">FILE</a>
                     </div>
                     <div class="form-group">
+                        <label for="server">Server:</label>
+                        <select class="form-control" name="server" id="server">
+                            <option selected value="https://nlt.mediaservices.biz/storage/newsletters/" >mediaservices.biz</option>
+                            <option value="https://www.resellerdirect.de/ca/" >resellerdirect</option>  
+                        </select>                       
+                    </div>
+                    <div class="form-group">
                               <label for="name">Name:</label>
                               <x-company-dropdown/>                              
                     </div>

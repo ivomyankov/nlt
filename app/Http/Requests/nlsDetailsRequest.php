@@ -27,6 +27,7 @@ class nlsDetailsRequest extends FormRequest
             'url'   => 'url',
             'file'  => 'mimes:zip,rar,gzip,text/html,html|max:200000', //required_without_all:url|
             'date'  => 'required|date_format:Y-m-d',
+            'server'  => 'required|min:10|max:60|in:https://nlt.mediaservices.biz/storage/newsletters/,https://www.resellerdirect.de/ca/',
             'company'  => 'required|min:3|max:20',
             'company_id'  => 'required|exists:companies,id'
         ];
