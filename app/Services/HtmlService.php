@@ -36,7 +36,9 @@ class HtmlService
         $images = array();
         $config = Cache::get('config');
 
-        $this->saveImageLogos();
+        if (Str::of($config['server'])->contains('mediaservices')){
+            $this->saveImageLogos($config);
+        }
         
         preg_match_all("{<img\\s*(.*?)src=('.*?'|\".*?\"|[^\\s]+)(.*?)\\s*/?>}ims", $html_content, $matches, PREG_SET_ORDER);
 
@@ -81,8 +83,7 @@ class HtmlService
         }
     }
 
-    private function saveImageLogos() { 
-        $config = Cache::get('config');
+    private function saveImageLogos($config) { 
         Image::make(storage_path('app/public/images/logo_mxp.png'))->save($config['storage_path'] . $config['folder']  . '/logo_mxp.png');
         Image::make(storage_path('app/public/images/f.png'))->save($config['storage_path'] . $config['folder']  . '/f.png');
         Image::make(storage_path('app/public/images/t.png'))->save($config['storage_path'] . $config['folder']  . '/t.png');
