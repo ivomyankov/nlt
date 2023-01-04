@@ -78,8 +78,8 @@ class HtmlController extends Controller
     {
         $config = Cache::get('config');
         //dd($config, Storage::disk('local'), Storage::disk('nls'), $config['storage_path'] . $config['folder'] . '/index.html');
-        try {
-            $html = File::get($config['storage_path'] . $config['folder'] . '/index.html');
+        try { 
+            $html = File::get($config['storage_path'] . $config['folder'] . '/index.html'); 
             return view('editor', ['html' => $html]);
         }
         catch(Exception $e) {

@@ -39,7 +39,7 @@ class ZipController extends Controller
             $zip->extractTo($storageDestinationPath);
             $zip->close();
 
-            $dirControllerInstance->renameDirContentFolder($storageDestinationPath);
+            //$dirControllerInstance->renameDirContentFolder($storageDestinationPath);
             return back()
              ->with('success','You have successfully extracted zip.');
         }

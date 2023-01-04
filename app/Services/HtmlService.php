@@ -37,7 +37,10 @@ class HtmlService
         $config = Cache::get('config');
 
         if (Str::of($config['server'])->contains('mediaservices')){
-            $this->saveImageLogos($config);
+            $this->saveMxpLogo($config);
+            if (Str::of($config['server'])->contains('Tarox')){
+                $this->saveTaroxLogos($config);
+            }
         }
         
         preg_match_all("{<img\\s*(.*?)src=('.*?'|\".*?\"|[^\\s]+)(.*?)\\s*/?>}ims", $html_content, $matches, PREG_SET_ORDER);
@@ -58,11 +61,22 @@ class HtmlService
                 if( isset($path_parts['extension']) && in_array($path_parts['extension'] , array('jpg', 'jpeg', 'png', 'gif', 'wepp')) ) {
                     //dump($path_parts['dirname']. '/' .$path_parts['basename']);
                     $this->saveImage($link, $path_parts['basename'], $config);
-                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['server']. $config['folder']. '/' . $path_parts['basename'], $html_content);
+                    // if image has no url in link
+                    if ($path_parts['dirname'] == '.'){
+                        $html_content = Str::replace($path_parts['basename'], $config['server']. $config['folder']. '/' . $path_parts['basename'], $html_content);
+                    } else {
+                        $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['server']. $config['folder']. '/' . $path_parts['basename'], $html_content);
+                    }
+                    
                 } else {
                     //dump($path_parts['dirname']. '/' .$path_parts['basename']);
-                    $this->saveImage($link, $i.'.jpg', $config);       
-                    $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['server']. $config['folder']. '/' . $i .'.jpg' , $html_content);            
+                    $this->saveImage($link, $i.'.jpg', $config);  
+                    // if image has no url in link
+                    if ($path_parts['dirname'] == '.'){
+                        $html_content = Str::replace($path_parts['basename'], $config['server']. $config['folder']. '/' . $i .'.jpg' , $html_content);
+                    } else {
+                        $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['server']. $config['folder']. '/' . $i .'.jpg' , $html_content);  
+                    }              
                 }                             
             }      
         }
@@ -79,17 +93,22 @@ class HtmlService
             Image::make($image)->save($config['storage_path'] . $config['folder'] . '/' . $baseName);
         }
         catch(Exception $e) {
-            dd($e->getMessage(), $image, $baseName);
+            if (!file_exists($config['storage_path'] . $config['folder'] . '/' . $baseName)) {
+                dd($e->getMessage(), $image, $baseName);
+            }            
         }
     }
 
-    private function saveImageLogos($config) { 
-        Image::make(storage_path('app/public/images/logo_mxp.png'))->save($config['storage_path'] . $config['folder']  . '/logo_mxp.png');
+    private function saveTaroxLogos($config) { 
         Image::make(storage_path('app/public/images/f.png'))->save($config['storage_path'] . $config['folder']  . '/f.png');
         Image::make(storage_path('app/public/images/t.png'))->save($config['storage_path'] . $config['folder']  . '/t.png');
         Image::make(storage_path('app/public/images/i.png'))->save($config['storage_path'] . $config['folder']  . '/i.png');
         Image::make(storage_path('app/public/images/x.png'))->save($config['storage_path'] . $config['folder']  . '/x.png');
         Image::make(storage_path('app/public/images/l.png'))->save($config['storage_path'] . $config['folder']  . '/l.png');
+    }
+
+    private function saveMxpLogo($config) { 
+        Image::make(storage_path('app/public/images/logo_mxp.png'))->save($config['storage_path'] . $config['folder']  . '/logo_mxp.png');
     }
 
     public function replaceAsciiInLinks($html_content) {
@@ -117,7 +136,8 @@ class HtmlService
 
         $html_content = Str::replace('&amp;', '&', $html_content);
         $html_content = Str::replace(';;', ';', $html_content);
-        $html_content = Str::replace('width="1200"', 'width="800"', $html_content);
+        $html_content = Str::replace('charset=ISO-8859-1', 'charset=utf-8', $html_content);
+        $html_content = Str::replace(';;', ';', $html_content);
         
         if ($config['company'] == 'Tarox') {
             $html_content = Str::replace('service@tripicchio', 'info@tarox', $html_content);
