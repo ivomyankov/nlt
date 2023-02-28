@@ -24,8 +24,9 @@
                     <div class="form-group">
                         <label for="server">Server:</label>
                         <select class="form-control" name="server" id="server">
-                            <option selected value="https://nlt.mediaservices.biz/storage/newsletters/" >mediaservices.biz</option>
-                            <option value="https://www.resellerdirect.de/ca/" >resellerdirect</option>  
+                            <option selected value="https://nlt.mediaservices.biz/storage/newsletters/" >Mediaservices</option>
+                            <option value="https://www.resellerdirect.de/ca/" >Resellerdirect</option>  
+                            <option value="https://www.flotte.de/exk/" >Flotte</option>  
                         </select>                       
                     </div>
                     <div class="form-group">

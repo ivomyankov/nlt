@@ -284,6 +284,36 @@ class HtmlService
 
     public function addHeader($html_content) {
         $config = Cache::get('config');
+
+        if (Str::contains($config['server'], 'flotte')) {
+            $header = '<!-- Flotte header -->
+            <table style="max-width:700px; width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                <tr bgcolor="#2e3d50">
+                    <td width="25" height="10" style="line-height:10px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; mso-line-height-rule: exactly;"><img height="10" src="https://www.flotte.de/exk/spacer.gif" alt="" border="0" /></td>
+                </tr>
+                <tr>
+                    <td align="center" style="font-family: Arial,sans-serif; font-size:12px;line-height:12px;color:#ffffff;background-color:#2e3d50;" >Sollte diese E‐Mail nicht einwandfrei zu lesen sein, so klicken Sie bitte&nbsp;<a href="[AltBrowserLink]" style="color:#ffffff;text-decoration:underline;font-family: Arial,sans-serif; font-size:12px;line-height:12px;">hier</a>
+                </td>
+                </tr>
+                <tr bgcolor="#2e3d50">
+                    <td height="10" style="line-height:10px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; mso-line-height-rule: exactly;" ><img height="10" src="https://www.flotte.de/exk/spacer.gif" alt="" border="0" /></td>
+                </tr>
+                <tr>
+                    <td valign="top" align="center" style="padding:0;border-collapse:collapse;font-size:0px;line-height:0px;" >
+                        <img alt="" src="https://www.flotte.de/exk/flotte_header_600.jpg" width="100%" border="0" style="display:block;" />
+                    </td>
+                </tr>
+            </table>
+            <!-- end of Flotte header -->';
+
+            $parts = preg_split('/(<body.*?>)/i', $html_content, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+            
+            $html_content = $parts[0] . $parts[1] . "\r\r\n" . $header . $parts[2]; 
+
+            return $html_content;  
+        }
+
+        $config = Cache::get('config');
         $de = 'Sollte diese E-Mail nicht korrekt dargestellt werden, klicken Sie bitte hier.';
         $en = 'If having problems viewing this announcement please click here.';
 
@@ -326,94 +356,127 @@ class HtmlService
         if (Str::contains($config['server'], 'resellerdirect')) {
             $html_content = Str::replace('</body>', '[footer700]</body>', $html_content);
 
-            return $html_content; 
+            //return $html_content; 
+        } else if (Str::contains($config['server'], 'mediaservices')) {
+            $de = '<!-- Footer -->
+            <br />
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="690">
+            <tbody>
+            <tr>
+            <td colspan="2">
+            <hr>
+            <br>
+            </td>
+            </tr>
+            <tr valign="middle">
+            <td valign="top" width="200">
+            <img src="'.$config['server'] . $config['folder'] . '/' .'logo_mxp.png" height="56" width="181">
+            </td>
+            <td>
+            <div style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';text-align:justify;">Dieses E-Mail ist kein Spam! Sie erhalten es als registrierter User, 
+                        als Interessent oder als Kunde der pro connect. pro connect mail-X-press informiert Sie regelmäßig über topaktuelle Sonderangebote leistungsstarker 
+                        Lieferanten und Hersteller. Es gelten die 
+                        <a href="https://pro-connect.de/privacy-policy/" style="font-family: arial, verdana; color: #'.$config["text_color"].'; font-size:10px;" target="_blank">Datenschutz-Bedingungen</a> und die <a href="https://pro-connect.de/terms-and-conditions/" style="font-family: arial, verdana; color: #'.$config["text_color"].'; font-size:10px;" target="_blank">AGBs</a> 
+                        der pro connect, ein Geschäftsbereich der Flotte Medien GmbH, Theaterstrasse 22, 53111 Bonn. Geschäftsführung: Bernd Franke, UID: DE 815 331 978, 
+                        Steuernummer 205/5716/1746, Handelsregister: AG Bonn, HRB 19053. Alle Preise in € (Euro) zzgl. MWSt., Irrtümer, Preisänderungen vorbehalten. © <a href="https://pro-connect.de/" style="font-family: arial, verdana; color: #'.$config["text_color"].'; font-size:10px;" target="_blank">pro connect</a>, Telefon +49-228-286294-30, E-Mail: 
+                        <a href="mailto:info@pro-connect.de" style="font-family: arial, verdana; color: #'.$config["text_color"].'; font-size:10px;" target="_blank">info@pro-connect.de</a>
+            </div>
+            </td>
+            </tr>
+            <tr>
+            <td colspan="2">&nbsp;<br>
+            <hr>
+            </td>
+            </tr>
+            <tr>
+            <td colspan="2" align="center">&nbsp;<br>
+            <a href="[UnsubscribeLink]" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">E-Mails abbestellen!</a>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            <br />';
+
+            $en = '<!-- English Footer -->
+            <br />
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:800px;">
+            <tbody>
+            <tr>
+            <td colspan="2" >
+            <hr />
+            <br />
+            </td>
+            </tr>
+            <tr valign="middle">
+            <td valign="top" width="200">
+            <img src="'.$config['server'] . $config['folder'] . '/' .'logo_mxp.png" height="56" width="181">
+            </td>
+            <td>
+            <div style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';text-align:justify;">This e-mail is not a spam! You recieve this e-mail as a registered client or as an intrested person 
+                        of pro connect. pro connect mail-X-press informs you regularly about current special offers from key suppliers and manufacturers. 
+                        <a href="https://pro-connect.de/en/terms-and-conditions/" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">General Terms and Conditions</a> and 
+                        <a href="https://pro-connect.de/privacy-policy/" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">data-protection</a> conditions of pro connect, a 
+                        division of Flotte Medien GmbH, Theaterstrasse 22, 53111 Bonn. Manager: Bernd Franke, UID: DE 815 331 978, tax number 205/5716/1746, commercial register: AG Bonn, HRB 19053. All prices in &euro; 
+                        (Euros) plus tax, errors and prices subject to alteration. &copy; <a href="https://pro-connect.de/" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">pro connect</a>, 
+                        phone +49-228-286294-30, mail: <a href="mailto:info@pro-connect.de" style="font-family: arial, verdana; color: #'.$config["text_color"].';" target="_blank" >info@pro-connect.de</a>
+            </div>
+            </td>
+            </tr>
+            <tr>
+            <td colspan="2" >&nbsp;<br />
+            <hr />
+            </td>
+            </tr>
+            <tr>
+            <td colspan="2" align="center">&nbsp;<br />
+            <a href="[UnsubscribeLink]" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">Unsubscribe!</a>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            <br />';
+            
+            if ($config['language'] == 'de') {
+                $lang = $de;
+            } else {
+                $lang = $en;
+            }
+
+            $html_content = Str::replace('</body>', $lang . '</body>', $html_content);
+        } else if (Str::contains($config['server'], 'flotte')) {
+            $footer = '<!-- Flotte footer -->
+            <table style="max-width:700px; width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                <tbody>			
+                    <tr>
+                            <td align="center" style="padding:0;">
+                                <img alt="Flotte Exklusiv Newsletter" src="https://www.flotte.de/exk/flotte_footer_600.jpg" width="100%" border="0" style="display:block;" />
+                            </td>
+                        </tr>
+            
+                        <tr>
+                                <td align="center">
+                                        <table bgcolor="#2e3d50" border="0" cellpadding="0" cellspacing="0" class="container" style="border:1px solid #8a909b;">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="font-family: Arial,  sans-serif; font-size: 11px; color:#ffffff;padding:15px;">Dieses E-Mail ist kein Spam! Sie erhalten es als registrierter User, als Interessent oder als Kunde der Flotte Medien GmbH / Magazin Flotten&shy;management. Flotte Exklusiv Newsletter informiert Sie regelm&auml;&szlig;ig &uuml;ber topaktuelle Angebote leistungsstarker Lieferanten und Hersteller.<br />Es gelten die Datenschutz- Bedingungen und die AGB der Flotte Medien GmbH, Theaterstrasse 22, 53111 Bonn. Gesch&auml;ftsf&uuml;hrung: Bernd Franke, UID: DE 815 331 978, Steuernummer 205/5716/1746, Handelsregister: AG Bonn, HRB 19053. Irrt&uuml;mer, Preis&auml;nderungen vorbehalten.<br /><br />&copy; Flotte Medien GmbH, Telefon +49-228-286294-10, E&ndash;Mail: <a href="mailto:post@flotte.de" style="font-family: Arial,  sans-serif; font-size: 11px; color:#ffffff;">post@flotte.de</a>
+                                                    <br /><br /><br />
+                                                    <a href="[UnsubscribeLink]" style="font-family: Arial,  sans-serif; color: #d61f1b; font-size: 14px; display: block; font-weight: bold;  text-decoration: none;" target="_blank">Newsletter abbestellen</a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>							   
+                                </td>
+                            </tr>
+                    </tbody>
+            </table>
+            <!-- end of Flotte footer -->';
+
+            $html_content = Str::replace('</body>', $footer.'</body>', $html_content);
         }
         
-        $de = '<!-- Footer -->
-        <br />
-        <table align="center" border="0" cellpadding="0" cellspacing="0" width="690">
-        <tbody>
-        <tr>
-        <td colspan="2">
-        <hr>
-        <br>
-        </td>
-        </tr>
-        <tr valign="middle">
-        <td valign="top" width="200">
-        <img src="'.$config['server'] . $config['folder'] . '/' .'logo_mxp.png" height="56" width="181">
-        </td>
-        <td>
-        <div style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';text-align:justify;">Dieses E-Mail ist kein Spam! Sie erhalten es als registrierter User, 
-                    als Interessent oder als Kunde der pro connect. pro connect mail-X-press informiert Sie regelmäßig über topaktuelle Sonderangebote leistungsstarker 
-                    Lieferanten und Hersteller. Es gelten die 
-                    <a href="https://pro-connect.de/privacy-policy/" style="font-family: arial, verdana; color: #'.$config["text_color"].'; font-size:10px;" target="_blank">Datenschutz-Bedingungen</a> und die <a href="https://pro-connect.de/terms-and-conditions/" style="font-family: arial, verdana; color: #'.$config["text_color"].'; font-size:10px;" target="_blank">AGBs</a> 
-                    der pro connect, ein Geschäftsbereich der Flotte Medien GmbH, Theaterstrasse 22, 53111 Bonn. Geschäftsführung: Bernd Franke, UID: DE 815 331 978, 
-                    Steuernummer 205/5716/1746, Handelsregister: AG Bonn, HRB 19053. Alle Preise in € (Euro) zzgl. MWSt., Irrtümer, Preisänderungen vorbehalten. © <a href="https://pro-connect.de/" style="font-family: arial, verdana; color: #'.$config["text_color"].'; font-size:10px;" target="_blank">pro connect</a>, Telefon +49-228-286294-30, E-Mail: 
-                    <a href="mailto:info@pro-connect.de" style="font-family: arial, verdana; color: #'.$config["text_color"].'; font-size:10px;" target="_blank">info@pro-connect.de</a>
-        </div>
-        </td>
-        </tr>
-        <tr>
-        <td colspan="2">&nbsp;<br>
-        <hr>
-        </td>
-        </tr>
-        <tr>
-        <td colspan="2" align="center">&nbsp;<br>
-        <a href="[UnsubscribeLink]" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">E-Mails abbestellen!</a>
-        </td>
-        </tr>
-        </tbody>
-        </table>
-        <br />';
-
-        $en = '<!-- English Footer -->
-        <br />
-        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:800px;">
-        <tbody>
-        <tr>
-        <td colspan="2" >
-        <hr />
-        <br />
-        </td>
-        </tr>
-        <tr valign="middle">
-        <td valign="top" width="200">
-        <img src="'.$config['server'] . $config['folder'] . '/' .'logo_mxp.png" height="56" width="181">
-        </td>
-        <td>
-        <div style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';text-align:justify;">This e-mail is not a spam! You recieve this e-mail as a registered client or as an intrested person 
-                    of pro connect. pro connect mail-X-press informs you regularly about current special offers from key suppliers and manufacturers. 
-                    <a href="https://pro-connect.de/en/terms-and-conditions/" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">General Terms and Conditions</a> and 
-                    <a href="https://pro-connect.de/privacy-policy/" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">data-protection</a> conditions of pro connect, a 
-                    division of Flotte Medien GmbH, Theaterstrasse 22, 53111 Bonn. Manager: Bernd Franke, UID: DE 815 331 978, tax number 205/5716/1746, commercial register: AG Bonn, HRB 19053. All prices in &euro; 
-                    (Euros) plus tax, errors and prices subject to alteration. &copy; <a href="https://pro-connect.de/" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">pro connect</a>, 
-                    phone +49-228-286294-30, mail: <a href="mailto:info@pro-connect.de" style="font-family: arial, verdana; color: #'.$config["text_color"].';" target="_blank" >info@pro-connect.de</a>
-        </div>
-        </td>
-        </tr>
-        <tr>
-        <td colspan="2" >&nbsp;<br />
-        <hr />
-        </td>
-        </tr>
-        <tr>
-        <td colspan="2" align="center">&nbsp;<br />
-        <a href="[UnsubscribeLink]" style="font-family: arial, verdana; font-size: 10px; color: #'.$config["text_color"].';" target="_blank">Unsubscribe!</a>
-        </td>
-        </tr>
-        </tbody>
-        </table>
-        <br />';
         
-        if ($config['language'] == 'de') {
-            $lang = $de;
-        } else {
-            $lang = $en;
-        }
 
-        $html_content = Str::replace('</body>', $lang . '</body>', $html_content);
+        
         //dd($html_content);
 
         return $html_content; 
