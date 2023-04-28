@@ -30,8 +30,9 @@
                         </select>                       
                     </div>
                     <div class="form-group">
-                              <label for="name">Name:</label>
-                              <x-company-dropdown/>                              
+                              <label for="company">Name:</label>
+                              <input type="text" id="company" name="company" class="form-control" > 
+                              <!--<x-company-dropdown/>                             --> 
                     </div>
                     <br>
                     <div class="form-group date">
@@ -69,10 +70,11 @@
             format: 'yyyy-mm-dd',
             autoclose: true
         });  
-        
+        /*
         $('#company_id').change(function() {
             $("#company").val($("#company_id option:selected" ).text());
         });
+        */
     </script> 
 @endpush            
 </x-app-layout>

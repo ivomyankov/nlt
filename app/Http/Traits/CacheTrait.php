@@ -13,7 +13,7 @@ trait CacheTrait {
             }
             $old_cache = Cache::get('config');
             //echo "<p>Old cache: <pre>" . var_dump($cache). "</pre></p>";
-            $new_cache = array_merge($old_cache, $config);
+            $new_cache = array_merge($old_cache, $config, ["last updated" => date("h:i:s.u")]);
             Cache::put('config', $new_cache, $seconds = 600);
             //$cache = Cache::get('config');
             //dump($new_cache);

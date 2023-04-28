@@ -18,7 +18,8 @@ class Newsletters extends Model
      */
     protected $fillable = [
         'date',
-        'company_id',
+        //'company_id',
+        'company',
         'archived',
     ];
 

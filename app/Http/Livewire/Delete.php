@@ -25,18 +25,22 @@ class Delete extends Component
         return view('livewire.delete');
     }
 
-    public function getDataParams() {
+    public function getDataParams() { 
         foreach ($this->directories as $key => $dir) {
-            $date = substr($dir, 0, 10);
-            $name = substr($dir, 11);
-            $week_day = date("D", strtotime($date));
-            $week_number = date("W", strtotime($date));
+            $year = substr($dir, 0, 4);
+            if ($year == date("Y")) {
+                $date = substr($dir, 0, 10);
+                $name = substr($dir, 11);
+                $week_day = date("D", strtotime($date));
+                $week_number = date("W", strtotime($date));
 
-            if (!isset($folders[$week_number][$week_day])) {
-                $folders[$week_number][$week_day] = [];
+                if (!isset($folders[$week_number][$week_day])) {
+                    $folders[$week_number][$week_day] = [];
+                }
+                
+                array_push($folders[$week_number][$week_day], ['directory' => $dir,'date' => $date, 'name' => $name]);
             }
             
-            array_push($folders[$week_number][$week_day], ['directory' => $dir,'date' => $date, 'name' => $name]);
         }
 
         $folders = $this->addEmptyDays($folders);

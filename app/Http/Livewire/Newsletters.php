@@ -28,17 +28,20 @@ class Newsletters extends Component
     }
 
     public function getDataParams() {
-        foreach ($this->nls as $key => $nl) { //dd($nl->company->name);
-            $date = $nl->date;
-            $company = $nl->company->name;
-            $week_day = date("D", strtotime($date));
-            $week_number = date("W", strtotime($date));
+        foreach ($this->nls as $key => $nl) { //dd($nl->date);
+            $year = substr($nl->date, 0, 4);
+            if ($year == date("Y")) {
+                $date = $nl->date;
+                $company = $nl->company->name;
+                $week_day = date("D", strtotime($date));
+                $week_number = date("W", strtotime($date));
 
-            if (!isset($weeks[$week_number][$week_day])) {
-                $weeks[$week_number][$week_day] = [];
+                if (!isset($weeks[$week_number][$week_day])) {
+                    $weeks[$week_number][$week_day] = [];
+                }
+                
+                array_push($weeks[$week_number][$week_day], ['nl' => $nl]);
             }
-            
-            array_push($weeks[$week_number][$week_day], ['nl' => $nl]);
         }
 
         $weeks = $this->addEmptyDays($weeks);

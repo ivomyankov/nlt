@@ -135,10 +135,26 @@ class HtmlService
         $config = Cache::get('config');
 
         $html_content = Str::replace('&amp;', '&', $html_content);
+        $html_content = Str::replace('[[PERMALINK]]', '[AltBrowserLink]', $html_content);
         $html_content = Str::replace(';;', ';', $html_content);
         $html_content = Str::replace('charset=ISO-8859-1', 'charset=utf-8', $html_content);
         $html_content = Str::replace(';;', ';', $html_content);
-        
+/* not working
+        if (!Str::of($html_content)->contains('ISO-8859-1')){
+            $html_content = Str::replace('&auml;', 'ä', $html_content);
+            $html_content = Str::replace('&Auml;', 'Ä', $html_content);
+            $html_content = Str::replace('&ouml;', 'ö', $html_content);
+            $html_content = Str::replace('&Ouml;', 'Ö', $html_content);
+            $html_content = Str::replace('&uuml;', 'ü', $html_content);
+            $html_content = Str::replace('&Uuml;', 'Ü', $html_content);
+            $html_content = Str::replace('&szlig;', 'ß', $html_content);
+        }
+        */
+        if ($config['company'] == 'Pulsa') {
+            $html_content = Str::replace('Die E-Mail wurde gesendet an [[EMAIL_TO]]', '', $html_content);
+            $html_content = Str::replace('Hier klicken zum Abmelden', '', $html_content);
+        }
+
         if ($config['company'] == 'Tarox') {
             $html_content = Str::replace('service@tripicchio', 'info@tarox', $html_content);
             $html_content = Str::replace('Sehr geehrter Herr Mustermann,', 'Lieber Leser,', $html_content);
@@ -217,7 +233,7 @@ class HtmlService
     }
 
     public function detectLanguage($html_content) { 
-        if (Str::contains($html_content, ['ü', 'ö', 'ß'])){
+        if (Str::contains($html_content, ['ü', 'ö', 'ß', '&uuml;', '&ouml;'])){
             $this->addToCache(['language' => 'de']);
         } else {
             $this->addToCache(['language' => 'en']);
@@ -278,12 +294,46 @@ class HtmlService
         }        
         
         $this->addToCache(['text_color' => $text_color]);
-        
+        $this->addToCache(['bgcolor' => $color]);
+
+        //dump($text_color, date("h:i:s.u"));
         return $text_color;
     }
 
     public function addHeader($html_content) {
         $config = Cache::get('config');
+        $de = 'Sollte diese E-Mail nicht korrekt dargestellt werden, klicken Sie bitte hier.';
+        $en = 'If having problems viewing this announcement please click here.';
+
+        if ($config['language'] == 'de') {
+            $lang = $de;
+        } else {
+            $lang = $en;
+        }
+        
+        try {
+            /* split the string contained in $html_content in three parts: 
+            * everything before the <body> tag
+            * the body tag with any attributes in it
+            * everything following the body tag
+            */
+            $parts = preg_split('/(<body.*?>)/i', $html_content, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+          
+            $text_color = $this->findBackgroundColor($parts[0], $parts[1]);
+            
+            //dd($text_color);
+
+            //dd($parts[1], $html_content);
+        }
+        catch(Exception $e) {
+            dd($e->getMessage());
+        }
+        //dump($config);
+
+        if (Str::of($html_content)->contains('Onlineversion')){  
+            return $html_content;
+        }
+
 
         if (Str::contains($config['server'], 'flotte')) {
             $header = '<!-- Flotte header -->
@@ -305,40 +355,12 @@ class HtmlService
                 </tr>
             </table>
             <!-- end of Flotte header -->';
-
+            // to be removed  because of duplication
             $parts = preg_split('/(<body.*?>)/i', $html_content, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
             
             $html_content = $parts[0] . $parts[1] . "\r\r\n" . $header . $parts[2]; 
 
             return $html_content;  
-        }
-
-        $config = Cache::get('config');
-        $de = 'Sollte diese E-Mail nicht korrekt dargestellt werden, klicken Sie bitte hier.';
-        $en = 'If having problems viewing this announcement please click here.';
-
-        if ($config['language'] == 'de') {
-            $lang = $de;
-        } else {
-            $lang = $en;
-        }
-        
-
-        try {
-            /* split the string contained in $html_content in three parts: 
-            * everything before the <body> tag
-            * the body tag with any attributes in it
-            * everything following the body tag
-            */
-            $parts = preg_split('/(<body.*?>)/i', $html_content, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-          
-            $text_color = $this->findBackgroundColor($parts[0], $parts[1]);
-            //dd($text_color);
-
-            //dd($parts[1], $html_content);
-        }
-        catch(Exception $e) {
-            dd($e->getMessage());
         }
 
         $header = '<div style="width:100%; padding:10px; text-align:center;font-family: arial;">
@@ -351,16 +373,21 @@ class HtmlService
     }
 
     public function addFooter($html_content) {
-        $config = Cache::get('config');
+        $config = Cache::get('config'); 
+        //dd($config, date("h:i:s.u"));
 
         if (Str::contains($config['server'], 'resellerdirect')) {
-            $html_content = Str::replace('</body>', '[footer700]</body>', $html_content);
+            if ($config['company'] == 'Pulsa') {
+                $html_content = Str::replace('</body>', '<table width="100%" align="center" style="background-color: #999999;"><tr><td align="center">[footer600]</td></tr></table></body>', $html_content);
+            } else {
+                $html_content = Str::replace('</body>', '[footer700]</body>', $html_content);
+            }            
 
             //return $html_content; 
         } else if (Str::contains($config['server'], 'mediaservices')) {
             $de = '<!-- Footer -->
             <br />
-            <table align="center" border="0" cellpadding="0" cellspacing="0" width="690">
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="700" style="max-width:700px; margin:auto;">
             <tbody>
             <tr>
             <td colspan="2">
@@ -399,7 +426,7 @@ class HtmlService
 
             $en = '<!-- English Footer -->
             <br />
-            <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:800px;">
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width:800px; margin:auto;">
             <tbody>
             <tr>
             <td colspan="2" >

@@ -17,7 +17,8 @@ return new class extends Migration
         Schema::create('newsletters', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->foreignIdFor(Company::class)->constrained();
+            $table->string('company');
+            //$table->foreignIdFor(Company::class)->constrained();
             $table->boolean('archived')->default(0);
         });
     }

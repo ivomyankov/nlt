@@ -29,7 +29,7 @@ class SourceController extends Controller
     public function index(SourceService $source_service, nlsDetailsRequest $request, DirService $dir)
     {         
         $validated = $request->validated();
-        //dump($validated);
+        //dd($validated);
         
         $this->addInCache($validated);
         $cache = $this->getCache('config');
@@ -51,6 +51,7 @@ class SourceController extends Controller
         //$this->saveHtmlFile($htmlContent);
       
         $cache = $this->getCache('config');
+        
         //dd($cache);
         return view('uploaded', ['cache' => $cache]);
     }
@@ -66,12 +67,12 @@ class SourceController extends Controller
 
     private function addInCache($validated)
     {
-        $company = Company::find($validated['company_id']);
+        //$company = Company::find($validated['company_id']);
         //dd($company['name']);
         $this->addToCache(['server' => $validated['server']]);
-        $this->addToCache(['company' => $company['name']]);
+        $this->addToCache(['company' => $validated['company']]);
         $this->addToCache(['date' => $validated['date']]);
-        $this->addToCache(['company_id' => $validated['company_id']]);
+        //$this->addToCache(['company_id' => $validated['company_id']]);
 
         return;
     }

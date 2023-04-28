@@ -95,10 +95,9 @@ class HtmlController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id = null) 
+    public function update(Request $request) 
     {
         $config = Cache::get('config');
         
@@ -156,7 +155,8 @@ class HtmlController extends Controller
         //dd($config);
         $data = [
             "date" => $config['date'],
-            "company_id" => $config['company_id']
+            "company" => $config['company']
+            //"company_id" => $config['company_id']
         ];
 
         $nl = Newsletters::firstOrCreate( $data); 
@@ -184,9 +184,9 @@ class HtmlController extends Controller
             $html_content = $this->html_service->checkHtmlStructure($html_content);
             $html_content = $this->html_service->replaceAsciiInLinks($html_content);
             $html_content = $this->html_service->fixCommonIssues($html_content);  
-            //$html_content = $this->html_service->escapeSpecialCharacters($html_content);            
-            $html_content = $this->html_service->imagesHandler($html_content);
-            $html_content = $this->html_service->addHeader($html_content);   
+            //$html_content = $this->html_service->escapeSpecialCharacters($html_content); 
+            $html_content = $this->html_service->addHeader($html_content);            
+            $html_content = $this->html_service->imagesHandler($html_content);  
             $html_content = $this->html_service->addFooter($html_content);       
         }
         catch(Exception $e) {

@@ -85,9 +85,9 @@ class ZipController extends Controller
     }
 
     public function arhivateNewsletter(Newsletters $nls, $id){
-        $nl = $nls::with('company')->find($id);
-        
-        $dir = storage_path('app/public/newsletters/'.$nl->date.'_'.$nl->company->name);
+        $nl = $nls::find($id);
+        //dd($nl);
+        $dir = storage_path('app/public/newsletters/'.$nl->date.'_'.$nl->company);
         $files = File::files($dir);
         //dd($files, $nl->date.'_'.$nl->company->name);
         $zip = new \ZipArchive();        
@@ -112,13 +112,13 @@ class ZipController extends Controller
             'Content-Type: application/pdf',
           );
 
-        return response()->download($dir.'/archive.zip', $nl->date.'_'.$nl->company->name.'.zip', $headers);
+        return response()->download($dir.'/archive.zip', $nl->date.'_'.$nl->company.'.zip', $headers);
     }
 
     public function unzip(Newsletters $nls, $id)
     {
-        $nl = $nls::with('company')->find($id);
-        $storageNlPath = storage_path("app/public/newsletters/".$nl->date.'_'.$nl->company->name);
+        $nl = $nls::find($id);
+        $storageNlPath = storage_path("app/public/newsletters/".$nl->date.'_'.$nl->company);
         //dd($nl, $storageNlPath);
         
         $zip = new ZipArchive();
@@ -135,7 +135,7 @@ class ZipController extends Controller
 
             $nl->update(['archived' => 0]);
 
-            return redirect('storage/newsletters/' . $nl->date.'_'.$nl->company->name . '/index.html');
+            return redirect('storage/newsletters/' . $nl->date.'_'.$nl->company . '/index.html');
         }
         
     }
