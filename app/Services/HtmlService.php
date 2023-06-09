@@ -41,6 +41,8 @@ class HtmlService
             if (Str::of($config['server'])->contains('Tarox')){
                 $this->saveTaroxLogos($config);
             }
+        } else if (Str::of($config['server'])->contains('flotte')){
+            $this->saveFlotteLogos($config);
         }
         
         preg_match_all("{<img\\s*(.*?)src=('.*?'|\".*?\"|[^\\s]+)(.*?)\\s*/?>}ims", $html_content, $matches, PREG_SET_ORDER);
@@ -107,23 +109,33 @@ class HtmlService
         Image::make(storage_path('app/public/images/l.png'))->save($config['storage_path'] . $config['folder']  . '/l.png');
     }
 
+    private function saveFlotteLogos($config) { 
+        Image::make(storage_path('app/public/images/flotte_header_'.$config["width"].'.jpg'))->save($config['storage_path'] . $config['folder']  . '/flotte_header_'.$config["width"].'.jpg');
+        Image::make(storage_path('app/public/images/flotte_footer_'.$config["width"].'.jpg'))->save($config['storage_path'] . $config['folder']  . '/flotte_footer_'.$config["width"].'.jpg');
+    }
+
     private function saveMxpLogo($config) { 
         Image::make(storage_path('app/public/images/logo_mxp.png'))->save($config['storage_path'] . $config['folder']  . '/logo_mxp.png');
     }
 
-    public function replaceAsciiInLinks($html_content) {
+    public function getLinks($html_content) {
         $pattern = '/\b(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#\/%=~_|$?!:,.]*[A-Z0-9+&@#\/%=~_|$]/i';
 
         if($links_found = preg_match_all($pattern, $html_content, $links)) {
-            
+            $utm = null;
             foreach ($links[0] as $key => $link) {
                 if (Str::of($link)->contains('www.w3.org')){
                     unset($links[0][$key]);
                     continue;
                 }
+                if (Str::of($link)->contains('utm')){
+                    $utm = 1;
+                }
                 $link_updated = Str::replace('http:', 'https:', $link);
                 $html_content = Str::replace($link, $link_updated, $html_content);
             }
+            $this->addToCache(['utm' => $utm]);
+            $this->addToCache(['links' => $links[0]]);
             
             return $html_content;
             //echo "FOUND ".$links_found." LINKS:\n";
@@ -132,7 +144,7 @@ class HtmlService
     }
 
     public function fixCommonIssues($html_content) {
-        $config = Cache::get('config');
+        $config = Cache::get('config'); 
 
         $html_content = Str::replace('&amp;', '&', $html_content);
         $html_content = Str::replace('[[PERMALINK]]', '[AltBrowserLink]', $html_content);
@@ -150,18 +162,19 @@ class HtmlService
             $html_content = Str::replace('&szlig;', 'ß', $html_content);
         }
         */
-        if ($config['company'] == 'Pulsa') {
+        if ($config['company'] == 'pulsa') {
             $html_content = Str::replace('Die E-Mail wurde gesendet an [[EMAIL_TO]]', '', $html_content);
             $html_content = Str::replace('Hier klicken zum Abmelden', '', $html_content);
         }
 
-        if ($config['company'] == 'Tarox') {
+        if ($config['company'] == 'tarox') {
             $html_content = Str::replace('service@tripicchio', 'info@tarox', $html_content);
             $html_content = Str::replace('Sehr geehrter Herr Mustermann,', 'Lieber Leser,', $html_content);
             $html_content = Str::replace('Lieber Herr Mustermann,', 'Lieber Leser,', $html_content);
+            $html_content = Str::replace('Tahoma;', 'Tahoma, sans-serif;', $html_content);
 
             $old = '<td align="left" class="SWYN" style="padding:27px 10px 0px 10px;"><a href="https://www.facebook.com/TAROXAG/"><img alt="" border="0" src="http://port-neo.scnem.com/art_resource.php?sid=nq1.je79nd" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 33px !important;" width="33" /></a> <a href="https://www.xing.com/company/taroxag"><img alt="" border="0" src="http://port-neo.scnem.com/art_resource.php?sid=nq2.2omn1rp" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 26px !important;" width="26" /></a> <a href="https://twitter.com/taroxag"><img alt="" border="0" src="http://port-neo.scnem.com/art_resource.php?sid=nq0.2e09bqd" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 21px !important;" width="21" /></a> <a href="https://www.linkedin.com/company/tarox-ag/"><img alt="LinkedIn" src="http://port-neo.scnem.com/art_resource.php?sid=95nd.2oooc2" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 32px !important;" width="32" /></a> <a href="https://www.instagram.com/taroxag/"><img alt="Instagram" src="http://port-neo.scnem.com/art_resource.php?sid=95ne.2894hk4" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 34px !important;" width="34" /></a></td>';
-            $old = $this->replaceAsciiInLinks($old);
+            //$old = $this->getLinks($old);
             $new = '<td align="left" class="SWYN" style="padding:27px 10px 0px 10px;"><a href="https://www.facebook.com/TAROXAG/"><img alt="" border="0" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn30745.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 33px !important;" width="33" /></a> <a href="https://www.xing.com/company/taroxag"><img alt="" border="0" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn30746.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 26px !important;" width="26" /></a> <a href="https://twitter.com/taroxag"><img alt="" border="0" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn30744.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 21px !important;" width="21" /></a> <a href="https://www.linkedin.com/company/tarox-ag/"><img alt="LinkedIn" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn427225.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 32px !important;" width="32" /></a> <a href="https://www.instagram.com/taroxag/"><img alt="Instagram" src="https://newsletter.mediaservices.biz/242/2022-11-17/img/scn427226.png" style="font-family: Arial, Helvetica\ Neue, Helvetica, sans-serif; font-size: 16px !important; width: 34px !important;" width="34" /></a></td>';
             $html_content = Str::replace($old, $new, $html_content);
                 //dd(Str::contains($html_content, $old), $config['base_url'].'/storage/images/' .'f.png');
@@ -172,10 +185,10 @@ class HtmlService
                 $html_content = substr_replace($html_content, '<td id="rmv" align="center" bgcolor="#EDEDED; display:none;">', $pos, strlen('<td align="center" bgcolor="#EDEDED">'));
                 $html_content = preg_replace('#<td id="rmv" (.*?)</body>#is', '</tbody></table></body>', $html_content);
             }
-        } else if ($config['company'] == 'Jarltech') {
+        } else if ($config['company'] == 'jarltech') {
             $html_content = Str::replace('https://www.jarltech.com/2007/jarltech.php?language=at_en&reqd=at&link=5', 'https://bit.ly/3UaNmhr', $html_content);
             $html_content = Str::replace('width="1200"', 'width="800"', $html_content);
-        } else if ($config['company'] == 'CDS') {
+        } else if ($config['company'] == 'cds') {
             str_replace("'", "\'", $html_content);
             //dd($html_content);
             $html_content = Str::replace("&#39;HCo Gotham&#39;, ", '', $html_content);
@@ -337,24 +350,21 @@ class HtmlService
 
         if (Str::contains($config['server'], 'flotte')) {
             $header = '<!-- Flotte header -->
-            <table style="max-width:700px; width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
-                <tr bgcolor="#2e3d50">
-                    <td width="25" height="10" style="line-height:10px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; mso-line-height-rule: exactly;"><img height="10" src="https://www.flotte.de/exk/spacer.gif" alt="" border="0" /></td>
-                </tr>
-                <tr>
-                    <td align="center" style="font-family: Arial,sans-serif; font-size:12px;line-height:12px;color:#ffffff;background-color:#2e3d50;" >Sollte diese E‐Mail nicht einwandfrei zu lesen sein, so klicken Sie bitte&nbsp;<a href="[AltBrowserLink]" style="color:#ffffff;text-decoration:underline;font-family: Arial,sans-serif; font-size:12px;line-height:12px;">hier</a>
-                </td>
-                </tr>
-                <tr bgcolor="#2e3d50">
-                    <td height="10" style="line-height:10px; mso-table-lspace: 0pt; mso-table-rspace: 0pt; mso-line-height-rule: exactly;" ><img height="10" src="https://www.flotte.de/exk/spacer.gif" alt="" border="0" /></td>
-                </tr>
-                <tr>
-                    <td valign="top" align="center" style="padding:0;border-collapse:collapse;font-size:0px;line-height:0px;" >
-                        <img alt="" src="https://www.flotte.de/exk/flotte_header_600.jpg" width="100%" border="0" style="display:block;" />
+            <table style="width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+               <tr>
+                    <td>
+                        <table width="100%" style="max-width:'.$config['width'].'px" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                            <tr>
+                                <td align="center" style="font-family: Arial,sans-serif; font-size:12px;line-height:12px;color:#ffffff;background-color:#2e3d50; padding:10px;" >Sollte diese E‐Mail nicht einwandfrei zu lesen sein, so klicken Sie bitte <a href="[AltBrowserLink]" style="color:#ffffff;text-decoration:underline;font-family: Arial,sans-serif; font-size:12px;line-height:12px;">hier</a></td>
+                            </tr>
+                            <tr>
+                                <td valign="top" align="center"><img src="https://www.flotte.de/exk/flotte_header_'.$config['width'].'.jpg" width="100%" border="0" style="display:block;" /></td>
+                            </tr>
+                        </table>
                     </td>
-                </tr>
-            </table>
-            <!-- end of Flotte header -->';
+               </tr>
+           </table>
+           <!-- header end -->';
             // to be removed  because of duplication
             $parts = preg_split('/(<body.*?>)/i', $html_content, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
             
@@ -363,9 +373,13 @@ class HtmlService
             return $html_content;  
         }
 
-        $header = '<div style="width:100%; padding:10px; text-align:center;font-family: arial;">
-                    <a href="[AltBrowserLink]" target="_blank" style="font-size:12px; text-decoration:none; color: #'.$text_color.';font-family:Tahoma,Verdana,Segoe,sans-serif;font-size:14px;">'.$lang.'</a>
-                </div>';
+        $header = '<table style="width:100%" cellpadding="0" cellspacing="0" border="0" align="center">
+                        <tr>
+                            <td>
+                                <a href="[AltBrowserLink]" target="_blank" style=" padding:10px; font-size:12px; text-decoration:none; color: #'.$text_color.';font-family:Tahoma,Verdana,Segoe,sans-serif;">'.$lang.'</a>
+                            </td>
+                        </tr>
+                    </table>';
 
         $html_content = $parts[0] . $parts[1] . "\r\r\n" . $header . $parts[2]; 
 
@@ -378,13 +392,13 @@ class HtmlService
 
         if (Str::contains($config['server'], 'resellerdirect')) {
             if ($config['company'] == 'Pulsa') {
-                $html_content = Str::replace('</body>', '<table width="100%" align="center" style="background-color: #999999;"><tr><td align="center">[footer600]</td></tr></table></body>', $html_content);
+                $html_content = Str::replace('</body>', '<table width="100%" align="center" style="background-color: #999999;"><tr><td align="center">[footer'.$config['width'].']</td></tr></table></body>', $html_content);
             } else {
-                $html_content = Str::replace('</body>', '[footer700]</body>', $html_content);
+                $html_content = Str::replace('</body>', '[footer'.$config['width'].']</body>', $html_content);
             }            
 
             //return $html_content; 
-        } else if (Str::contains($config['server'], 'mediaservices')) {
+        } else if (Str::contains($config['server'], 'mediaservices') && !Str::of($html_content)->contains('logo_mxp')) {
             $de = '<!-- Footer -->
             <br />
             <table align="center" border="0" cellpadding="0" cellspacing="0" width="700" style="max-width:700px; margin:auto;">
@@ -472,31 +486,31 @@ class HtmlService
             $html_content = Str::replace('</body>', $lang . '</body>', $html_content);
         } else if (Str::contains($config['server'], 'flotte')) {
             $footer = '<!-- Flotte footer -->
-            <table style="max-width:700px; width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
-                <tbody>			
-                    <tr>
-                            <td align="center" style="padding:0;">
-                                <img alt="Flotte Exklusiv Newsletter" src="https://www.flotte.de/exk/flotte_footer_600.jpg" width="100%" border="0" style="display:block;" />
-                            </td>
-                        </tr>
-            
-                        <tr>
-                                <td align="center">
-                                        <table bgcolor="#2e3d50" border="0" cellpadding="0" cellspacing="0" class="container" style="border:1px solid #8a909b;">
-                                            <tbody>
-                                                <tr>
-                                                    <td style="font-family: Arial,  sans-serif; font-size: 11px; color:#ffffff;padding:15px;">Dieses E-Mail ist kein Spam! Sie erhalten es als registrierter User, als Interessent oder als Kunde der Flotte Medien GmbH / Magazin Flotten&shy;management. Flotte Exklusiv Newsletter informiert Sie regelm&auml;&szlig;ig &uuml;ber topaktuelle Angebote leistungsstarker Lieferanten und Hersteller.<br />Es gelten die Datenschutz- Bedingungen und die AGB der Flotte Medien GmbH, Theaterstrasse 22, 53111 Bonn. Gesch&auml;ftsf&uuml;hrung: Bernd Franke, UID: DE 815 331 978, Steuernummer 205/5716/1746, Handelsregister: AG Bonn, HRB 19053. Irrt&uuml;mer, Preis&auml;nderungen vorbehalten.<br /><br />&copy; Flotte Medien GmbH, Telefon +49-228-286294-10, E&ndash;Mail: <a href="mailto:post@flotte.de" style="font-family: Arial,  sans-serif; font-size: 11px; color:#ffffff;">post@flotte.de</a>
-                                                    <br /><br /><br />
-                                                    <a href="[UnsubscribeLink]" style="font-family: Arial,  sans-serif; color: #d61f1b; font-size: 14px; display: block; font-weight: bold;  text-decoration: none;" target="_blank">Newsletter abbestellen</a>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>							   
-                                </td>
-                            </tr>
-                    </tbody>
-            </table>
-            <!-- end of Flotte footer -->';
+            <table style="width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                <tr>
+                    <td>
+                        <br>
+                        <table width="100%" style="max-width:'.$config['width'].'px;" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                            <tbody>			
+                                <tr>
+                                    <td align="center" style="padding:0;">
+                                        <img alt="Flotte Exklusiv Newsletter" src="https://www.flotte.de/exk/flotte_footer_'.$config['width'].'.jpg" width="100%" border="0" style="display:block;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                        <td align="center" style="border:1px solid #8a909b; font-family: Arial,  sans-serif; font-size: 11px; color:#ffffff;padding:15px;">
+                                            Dieses E-Mail ist kein Spam! Sie erhalten es als registrierter User, als Interessent oder als Kunde der Flotte Medien GmbH / Magazin Flotten&shy;management. Flotte Exklusiv Newsletter informiert Sie regelm&auml;&szlig;ig &uuml;ber topaktuelle Angebote leistungsstarker Lieferanten und Hersteller.<br />Es gelten die Datenschutz- Bedingungen und die AGB der Flotte Medien GmbH, Theaterstrasse 22, 53111 Bonn. Gesch&auml;ftsf&uuml;hrung: Bernd Franke, UID: DE 815 331 978, Steuernummer 205/5716/1746, Handelsregister: AG Bonn, HRB 19053. Irrt&uuml;mer, Preis&auml;nderungen vorbehalten.<br /><br />&copy; Flotte Medien GmbH, Telefon +49-228-286294-10, E&ndash;Mail: <a href="mailto:post@flotte.de" style="font-family: Arial,  sans-serif; font-size: 11px; color:#ffffff;">post@flotte.de</a>
+                                            <br /><br /><br />
+                                            <a href="[UnsubscribeLink]" style="font-family: Arial,  sans-serif; color: #d61f1b; font-size: 14px; display: block; font-weight: bold;  text-decoration: none;" target="_blank">Newsletter abbestellen</a>                                                                        
+                                        </td>
+                                    </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                    </td>
+                </tr>
+              </table>
+              <!-- end of Flotte footer -->';
 
             $html_content = Str::replace('</body>', $footer.'</body>', $html_content);
         }

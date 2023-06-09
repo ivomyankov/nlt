@@ -41,10 +41,10 @@ class SourceController extends Controller
         $source = $this->source($validated);
 
         // Source Handler takes care of whatever type submited (arhive, html, url)
-        // then creates the neded folders on disk and saves images.
+        // then creates the needed folders on disk and saves images.
         // returns the content of the html
         $htmlContent = $source_service->handle($source, $folder, $dir);
-
+    
         // saves the content of the html to html file on disk
         $this->htmlController->handleCreation($htmlContent);
         //$this->html_service->saveHtmlFile($this->htmlController, $htmlContent);
@@ -72,6 +72,7 @@ class SourceController extends Controller
         $this->addToCache(['server' => $validated['server']]);
         $this->addToCache(['company' => $validated['company']]);
         $this->addToCache(['date' => $validated['date']]);
+        $this->addToCache(['width' => $validated['width']]);
         //$this->addToCache(['company_id' => $validated['company_id']]);
 
         return;

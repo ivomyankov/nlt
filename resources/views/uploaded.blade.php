@@ -11,10 +11,21 @@
           <div style="margin-left:20px;">
             <p class="font-bold">Html uploaded successfully</p>
             <p class="text-sm">Open html in new tab: <x-jet-nav-link href="{{ url('storage/newsletters/' . $cache['folder'] . '/index.html') }}" target="_blank" :active="request()->routeIs('upload')">{{ $cache['folder'] }}</x-jet-nav-link></p>
+            <p class="text-sm">UTM: <b>{{ $cache['utm'] == 1 ? "Yes" : "No" }}</b>
+            <p class="text-sm">Links: <b style="text-decoration: underline" onclick="$( '#links').toggle();">Toggle</b>
+            {{-- dd($cache['links']) --}}
+                
+            </p>
             <p class="text-sm">Edit html: <x-jet-nav-link href="{{ route('edit') }}" target="_blank" >{{ $cache['folder'] }}</x-jet-nav-link></p>
             <p class="text-sm">Download html: <x-jet-nav-link href="{{ route('zip', ['id' => $cache['nl_id'] ]) }}" target="_blank" >Download</x-jet-nav-link></p> 
           </div>
         </div>
+    </div>
+
+    <div id="links" class="w-70 rounded-b text-teal-900 px-4 py-3 shadow-md bg-slate-50" style="background: blanchedalmond; width:90%; margin:auto; display:none;">
+        @foreach ($cache['links'] as $key => $value)  
+            {{ $value }} <br>
+        @endforeach
     </div>
 
 

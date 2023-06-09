@@ -40,6 +40,12 @@
                         <input class="datepicker form-control" type="text" name="date" value="{{ date('Y-m-d') }}" >
                         <span class="input-group-addon"><img style="height: 30px !important; position: absolute; margin-top: -35px; margin-left: 315px;" src="https://cdn-icons-png.flaticon.com/512/55/55281.png"></span>
                     </div>
+                    <br>
+                    <div class="form-group date">
+                        <label for="date">Width:</label><br>
+                        <input type="text" id="width" name="width" class="form-control" value="600" > 
+                    </div>
+                    
                     @switch($source)
                         @case('url')  
                             <div class="form-group py-4">

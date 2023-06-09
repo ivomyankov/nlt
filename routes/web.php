@@ -50,7 +50,7 @@ Route::get('/edit', [HtmlController::class, 'edit'])->name('edit')->middleware('
 //Route::get('/newsletters', [DirService::class, 'newsletters'])->name('newsletters')->middleware('auth');
 Route::get('/newsletters', [HtmlController::class, 'index'])->name('newsletters')->middleware('auth');
 
-Route::get('upload/{source?}', function ($source = null) {
+Route::get('upload/{source?}', function ($source = 'file') {
     return view('upload', compact("source"));
 })->whereIn('upload', ['url', 'file'])->middleware('auth')->name('upload');
 

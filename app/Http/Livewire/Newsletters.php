@@ -21,7 +21,7 @@ class Newsletters extends Component
 
     public function render()
     {
-        //dd($this->nls);
+        dd($this->nls);
         $this->weeks = $this->getDataParams();
 
         return view('livewire.newsletters');
@@ -32,7 +32,7 @@ class Newsletters extends Component
             $year = substr($nl->date, 0, 4);
             if ($year == date("Y")) {
                 $date = $nl->date;
-                $company = $nl->company->name;
+                //$company = $nl->company->name;
                 $week_day = date("D", strtotime($date));
                 $week_number = date("W", strtotime($date));
 
