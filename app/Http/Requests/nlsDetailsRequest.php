@@ -30,7 +30,7 @@ class nlsDetailsRequest extends FormRequest
             'width' => 'required|numeric:600,650,700,750,800,850,900',
             'server'  => 'required|min:10|max:60|in:https://nlt.mediaservices.biz/storage/newsletters/,https://www.resellerdirect.de/ca/,https://www.flotte.de/exk/',
             //'company_id'  => 'required|exists:companies,id',
-            'company'  => 'required|min:3|max:20'
+            'company'  => 'required|min:2|max:20'
             
         ];
     }

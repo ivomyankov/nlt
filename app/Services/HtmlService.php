@@ -35,16 +35,21 @@ class HtmlService
         $i=0;
         $images = array();
         $config = Cache::get('config');
+        $image_path = $config['server'] . Str::replace('-', '', substr( $config['date'], 2)) . '_' . $config['company']. '/';
 
         if (Str::of($config['server'])->contains('mediaservices')){
+            $image_path = $config['server']. $config['folder'] . '/';
             $this->saveMxpLogo($config);
             if (Str::of($config['server'])->contains('Tarox')){
                 $this->saveTaroxLogos($config);
             }
-        } else if (Str::of($config['server'])->contains('flotte')){
+        } else if (Str::of($config['server'])->contains('flotte')){      
+            $image_path = $config['server']. $config['company']. '/' . Str::replace('-', '', substr( $config['date'], 2)) . '/';       
             $this->saveFlotteLogos($config);
         }
-        
+
+        $this->addToCache(['image_path' => $image_path]);
+        //$config = Cache::get('config');dd($config);
         preg_match_all("{<img\\s*(.*?)src=('.*?'|\".*?\"|[^\\s]+)(.*?)\\s*/?>}ims", $html_content, $matches, PREG_SET_ORDER);
 
         foreach ($matches as $val) {
@@ -60,14 +65,14 @@ class HtmlService
                 $i++;
                 $images[$link] = $path_parts['basename'];
                 // if image url is unknown format, will replace name and extention with number and jpg => $i.jpg
-                if( isset($path_parts['extension']) && in_array($path_parts['extension'] , array('jpg', 'jpeg', 'png', 'gif', 'wepp')) ) {
+                if( isset($path_parts['extension']) && in_array($path_parts['extension'] , array('jpg', 'jpeg', 'png', 'gif', 'wepp', 'svg')) ) {
                     //dump($path_parts['dirname']. '/' .$path_parts['basename']);
                     $this->saveImage($link, $path_parts['basename'], $config);
                     // if image has no url in link
                     if ($path_parts['dirname'] == '.'){
-                        $html_content = Str::replace($path_parts['basename'], $config['server']. $config['folder']. '/' . $path_parts['basename'], $html_content);
+                        $html_content = Str::replace($path_parts['basename'], $image_path . $path_parts['basename'], $html_content);
                     } else {
-                        $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['server']. $config['folder']. '/' . $path_parts['basename'], $html_content);
+                        $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $image_path . $path_parts['basename'], $html_content);
                     }
                     
                 } else {
@@ -75,15 +80,15 @@ class HtmlService
                     $this->saveImage($link, $i.'.jpg', $config);  
                     // if image has no url in link
                     if ($path_parts['dirname'] == '.'){
-                        $html_content = Str::replace($path_parts['basename'], $config['server']. $config['folder']. '/' . $i .'.jpg' , $html_content);
+                        $html_content = Str::replace($path_parts['basename'], $image_path . $i .'.jpg' , $html_content);
                     } else {
-                        $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $config['server']. $config['folder']. '/' . $i .'.jpg' , $html_content);  
+                        $html_content = Str::replace($path_parts['dirname']. '/' .$path_parts['basename'], $image_path . $i .'.jpg' , $html_content);  
                     }              
                 }                             
             }      
         }
         
-        //dump($html_content); 
+        //dd($html_content); 
         return $html_content;
     }
 
@@ -353,7 +358,7 @@ class HtmlService
             <table style="width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
                <tr>
                     <td>
-                        <table width="100%" style="max-width:'.$config['width'].'px" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                        <table width="'.$config['width'].'" style="width:100%; max-width:'.$config['width'].'px" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
                             <tr>
                                 <td align="center" style="font-family: Arial,sans-serif; font-size:12px;line-height:12px;color:#ffffff;background-color:#2e3d50; padding:10px;" >Sollte diese E‐Mail nicht einwandfrei zu lesen sein, so klicken Sie bitte <a href="[AltBrowserLink]" style="color:#ffffff;text-decoration:underline;font-family: Arial,sans-serif; font-size:12px;line-height:12px;">hier</a></td>
                             </tr>
@@ -490,7 +495,7 @@ class HtmlService
                 <tr>
                     <td>
                         <br>
-                        <table width="100%" style="max-width:'.$config['width'].'px;" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                        <table width="'.$config['width'].'" style="width:100%; max-width:'.$config['width'].'px" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
                             <tbody>			
                                 <tr>
                                     <td align="center" style="padding:0;">

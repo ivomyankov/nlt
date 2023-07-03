@@ -186,9 +186,9 @@ class HtmlController extends Controller
             $html_content = $this->html_service->getLinks($html_content);
             $html_content = $this->html_service->fixCommonIssues($html_content); 
             //$html_content = $this->html_service->escapeSpecialCharacters($html_content); 
+            $html_content = $this->html_service->imagesHandler($html_content);  
             $html_content = $this->html_service->addHeader($html_content);         
             $html_content = $this->html_service->addFooter($html_content);         //dd($this->getCache('config'));  
-            $html_content = $this->html_service->imagesHandler($html_content);  
         }
         catch(Exception $e) {
             dd($e->getMessage());

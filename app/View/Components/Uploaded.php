@@ -40,8 +40,8 @@ class Uploaded extends Component
         return $content;
     }
 
-    private function replaceImageUrl($content) {
-        $content = Str::replace($this->config['server'], $this->config['internal_path'], $content);
+    private function replaceImageUrl($content) { //dd($this->config,$content);
+        $content = Str::replace($this->config['image_path'], $this->config['internal_path'].$this->config['folder'].'/', $content);
         echo $content;
     }
 }
