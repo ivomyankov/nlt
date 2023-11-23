@@ -39,7 +39,7 @@ class SourceController extends Controller
         //dd($folder);
         
         $source = $this->source($validated);
-
+        
         // Source Handler takes care of whatever type submited (arhive, html, url)
         // then creates the needed folders on disk and saves images.
         // returns the content of the html

@@ -26,6 +26,7 @@
                         <select class="form-control" name="server" id="server">
                             <option selected value="https://nlt.mediaservices.biz/storage/newsletters/" >Mediaservices</option>
                             <option value="https://www.resellerdirect.de/ca/" >Resellerdirect</option>  
+                            <option value="https://server1.digital-biz.de/exk/" >Server1</option>  
                             <option value="https://www.flotte.de/exk/" >Flotte</option>  
                         </select>                       
                     </div>

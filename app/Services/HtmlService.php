@@ -37,7 +37,7 @@ class HtmlService
         $config = Cache::get('config');
         $image_path = $config['server'] . Str::replace('-', '', substr( $config['date'], 2)) . '_' . $config['company']. '/';
 
-        if (Str::of($config['server'])->contains('mediaservices')){
+        if (Str::of($config['server'])->contains('mediaservices','server1')){
             $image_path = $config['server']. $config['folder'] . '/';
             $this->saveMxpLogo($config);
             if (Str::of($config['server'])->contains('Tarox')){
@@ -45,6 +45,9 @@ class HtmlService
             }
         } else if (Str::of($config['server'])->contains('flotte')){      
             $image_path = $config['server']. $config['company']. '/' . Str::replace('-', '', substr( $config['date'], 2)) . '/';       
+            $this->saveFlotteLogos($config);
+        } else if (Str::of($config['server'])->contains('server1')){    
+            $image_path = $config['server']. $config['folder'] . '/';      
             $this->saveFlotteLogos($config);
         }
 
@@ -96,12 +99,12 @@ class HtmlService
         if (Str::of($image)->contains(' ')){
             $image = Str::replace(' ', '%20', $image);
         }
-        try {
+        try {  
             Image::make($image)->save($config['storage_path'] . $config['folder'] . '/' . $baseName);
         }
         catch(Exception $e) {
             if (!file_exists($config['storage_path'] . $config['folder'] . '/' . $baseName)) {
-                dd($e->getMessage(), $image, $baseName);
+                dd($e->getMessage(), $image, $baseName, $config['storage_path'] . $config['folder'] . '/' . $baseName);
             }            
         }
     }
@@ -353,7 +356,7 @@ class HtmlService
         }
 
 
-        if (Str::contains($config['server'], 'flotte')) {
+        if (Str::contains($config['server'], 'flotte') || Str::contains($config['server'], 'server1')) {
             $header = '<!-- Flotte header -->
             <table style="width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
                <tr>
@@ -363,13 +366,24 @@ class HtmlService
                                 <td align="center" style="font-family: Arial,sans-serif; font-size:12px;line-height:12px;color:#ffffff;background-color:#2e3d50; padding:10px;" >Sollte diese E‐Mail nicht einwandfrei zu lesen sein, so klicken Sie bitte <a href="[AltBrowserLink]" style="color:#ffffff;text-decoration:underline;font-family: Arial,sans-serif; font-size:12px;line-height:12px;">hier</a></td>
                             </tr>
                             <tr>
-                                <td valign="top" align="center"><img src="https://www.flotte.de/exk/flotte_header_'.$config['width'].'.jpg" width="100%" border="0" style="display:block;" /></td>
+                                <td valign="top" align="center"><img src="'.$config['server'].'flotte_header_'.$config['width'].'.jpg" width="100%" border="0" style="display:block;" /></td>
                             </tr>
                         </table>
                     </td>
                </tr>
            </table>
-           <!-- header end -->';
+           <!-- header end -->
+           <table style="width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+               <tr>
+                    <td bgcolor="#2e3d50" align="center">
+                        <!--[if mso | IE]>
+                        <table width="'.$config['width'].'" border="0" cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                        <td style="width:'.$config['width'].'px;" align="center" >
+                        <![endif]-->
+                        <table width="'.$config['width'].'" style="width:100%; max-width:'.$config['width'].'px" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                                <tr>
+                                    <td>';
             // to be removed  because of duplication
             $parts = preg_split('/(<body.*?>)/i', $html_content, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
             
@@ -380,7 +394,7 @@ class HtmlService
 
         $header = '<table style="width:100%" cellpadding="0" cellspacing="0" border="0" align="center">
                         <tr>
-                            <td>
+                            <td align="center">
                                 <a href="[AltBrowserLink]" target="_blank" style=" padding:10px; font-size:12px; text-decoration:none; color: #'.$text_color.';font-family:Tahoma,Verdana,Segoe,sans-serif;">'.$lang.'</a>
                             </td>
                         </tr>
@@ -489,8 +503,19 @@ class HtmlService
             }
 
             $html_content = Str::replace('</body>', $lang . '</body>', $html_content);
-        } else if (Str::contains($config['server'], 'flotte')) {
-            $footer = '<!-- Flotte footer -->
+        } else if (Str::contains($config['server'], 'flotte') || Str::contains($config['server'], 'server1')) { 
+                $footer = '<!--[if mso | IE]>
+                                </td>
+                                <tr>
+                                </table>
+                                <![endif]-->     
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <!-- Flotte footer -->
             <table style="width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
                 <tr>
                     <td>
@@ -499,7 +524,7 @@ class HtmlService
                             <tbody>			
                                 <tr>
                                     <td align="center" style="padding:0;">
-                                        <img alt="Flotte Exklusiv Newsletter" src="https://www.flotte.de/exk/flotte_footer_'.$config['width'].'.jpg" width="100%" border="0" style="display:block;" />
+                                        <img alt="Flotte Exklusiv Newsletter" src="'.$config['server'].'flotte_footer_'.$config['width'].'.jpg" width="100%" border="0" style="display:block;" />
                                     </td>
                                 </tr>
                                 <tr>
