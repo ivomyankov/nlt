@@ -254,7 +254,7 @@ class HtmlService
     }
 
     public function detectLanguage($html_content) { 
-        if (Str::contains($html_content, ['ü', 'ö', 'ß', '&uuml;', '&ouml;'])){
+        if (Str::contains($html_content, [' und ', ' ist ', ' die '])){  //
             $this->addToCache(['language' => 'de']);
         } else {
             $this->addToCache(['language' => 'en']);
@@ -351,7 +351,7 @@ class HtmlService
         }
         //dump($config);
 
-        if (Str::of($html_content)->contains('Onlineversion')){  
+        if (Str::of($html_content)->contains('Onlineversion') || Str::of($html_content)->contains('[AltBrowserLink]')){  
             return $html_content;
         }
 
@@ -361,7 +361,7 @@ class HtmlService
             <table style="width:100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
                <tr>
                     <td>
-                        <table width="'.$config['width'].'" style="width:100%; max-width:'.$config['width'].'px" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                        <table width="'.$config['width'].'" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
                             <tr>
                                 <td align="center" style="font-family: Arial,sans-serif; font-size:12px;line-height:12px;color:#ffffff;background-color:#2e3d50; padding:10px;" >Sollte diese E‐Mail nicht einwandfrei zu lesen sein, so klicken Sie bitte <a href="[AltBrowserLink]" style="color:#ffffff;text-decoration:underline;font-family: Arial,sans-serif; font-size:12px;line-height:12px;">hier</a></td>
                             </tr>
@@ -409,7 +409,11 @@ class HtmlService
         $config = Cache::get('config'); 
         //dd($config, date("h:i:s.u"));
 
-        if (Str::contains($config['server'], 'resellerdirect')) {
+        if (Str::of($html_content)->contains('[UnsubscribeLink]')) {
+            return $html_content; 
+        }
+
+        if (Str::contains($config['server'], 'resellerdirect') || Str::contains($config['server'], '[UnsubscribeLink]')) {
             if ($config['company'] == 'Pulsa') {
                 $html_content = Str::replace('</body>', '<table width="100%" align="center" style="background-color: #999999;"><tr><td align="center">[footer'.$config['width'].']</td></tr></table></body>', $html_content);
             } else {
@@ -520,7 +524,7 @@ class HtmlService
                 <tr>
                     <td>
                         <br>
-                        <table width="'.$config['width'].'" style="width:100%; max-width:'.$config['width'].'px" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
+                        <table width="'.$config['width'].'" cellpadding="0" cellspacing="0" border="0" bgcolor="#2e3d50" align="center">
                             <tbody>			
                                 <tr>
                                     <td align="center" style="padding:0;">
